@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<description:Group xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:description_2="http://www.eclipse.org/sirius/table/description/1.1.0" xmlns:style="http://www.eclipse.org/sirius/diagram/description/style/1.1.0" xmlns:tool="http://www.eclipse.org/sirius/description/tool/1.1.0" xmlns:tool_1="http://www.eclipse.org/sirius/diagram/description/tool/1.1.0" name="emfta" version="11.0.0.201601261200">
+<description:Group xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:description="http://www.eclipse.org/sirius/description/1.1.0" xmlns:description_1="http://www.eclipse.org/sirius/diagram/description/1.1.0" xmlns:description_2="http://www.eclipse.org/sirius/table/description/1.1.0" xmlns:style="http://www.eclipse.org/sirius/diagram/description/style/1.1.0" xmlns:tool="http://www.eclipse.org/sirius/description/tool/1.1.0" xmlns:tool_1="http://www.eclipse.org/sirius/diagram/description/tool/1.1.0" name="emfta" version="12.0.0.2017041100">
   <ownedViewpoints name="EMFTA" label="EMFTA" modelFileExtension="emfta">
     <ownedRepresentations xsi:type="description_1:DiagramDescription" name="Tree.diagram" label="FTA Tree" domainClass="emfta.FTAModel">
       <layout xsi:type="description_1:CompositeLayout"/>
@@ -164,6 +164,8 @@
         <toolSections name="TreeSection">
           <ownedTools xsi:type="tool:ExternalJavaAction" name="GenerateProbability" label="Generate Events Probability Report" id="edu.cmu.emfta.actions.ComputeProbabilityAction"/>
           <ownedTools xsi:type="tool:ExternalJavaAction" name="UpdateProbability" label="Compute Probabilities" id="edu.cmu.emfta.actions.UpdateProbabilityAction"/>
+          <ownedTools xsi:type="tool:ExternalJavaAction" name="GenerateURI" label="Generate URI" id="edu.cmu.emfta.actions.GenerateURIAction"/>
+          <ownedTools xsi:type="tool:ExternalJavaAction" name="Cutset" label="Generate Cutset" id="edu.cmu.emfta.actions.CutsetAction"/>
           <ownedTools xsi:type="tool_1:NodeCreationDescription" name="CreateEvent" label="Create Event" nodeMappings="//@ownedViewpoints[name='EMFTA']/@ownedRepresentations[name='Tree.diagram']/@defaultLayer/@nodeMappings[name='EventNode']">
             <variable name="container"/>
             <viewVariable name="containerView"/>
@@ -195,6 +197,8 @@
               </firstModelOperations>
             </initialOperation>
           </ownedTools>
+          <ownedTools xsi:type="tool:ExternalJavaAction" name="SetEventToDesignTraceability" label="Set Traceability to Design Artifacts" id="edu.cmu.emfta.actions.SetEventToDesignTraceabilityAction"/>
+          <ownedTools xsi:type="tool:ExternalJavaAction" name="SetEventToRequirementTraceability" label="Set Traceability to Requirement Artifacts" id="edu.cmu.emfta.actions.SetEventToRequirementTraceabilityAction"/>
         </toolSections>
       </defaultLayer>
     </ownedRepresentations>
@@ -284,7 +288,7 @@
           </style>
         </edgeMappings>
         <decorationDescriptionsSet>
-          <decorationDescriptions xsi:type="description_1:MappingBasedDecoration" name="basic" position="SOUTH" decoratorPath="/emfta.design/imgs/Circle64.png" preconditionExpression="aql:self.type.toString().equalsIgnoreCase('basic')  and (self.gate->size() = 0)" mappings="//@ownedViewpoints[name='EMFTA']/@ownedRepresentations[name='realtree2.diagram']/@defaultLayer/@nodeMappings[name='EventNodeT2']"/>
+          <decorationDescriptions xsi:type="description_1:MappingBasedDecoration" name="basic" position="SOUTH" preconditionExpression="aql:self.type.toString().equalsIgnoreCase('basic')  and (self.gate->size() = 0)" imageExpression="/emfta.design/imgs/Circle64.png" mappings="//@ownedViewpoints[name='EMFTA']/@ownedRepresentations[name='realtree2.diagram']/@defaultLayer/@nodeMappings[name='EventNodeT2']"/>
         </decorationDescriptionsSet>
       </defaultLayer>
     </ownedRepresentations>

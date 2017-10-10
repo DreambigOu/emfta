@@ -117,5 +117,26 @@
       	<persistent value="true">
         </persistent>
    </extension>
+   <extension
+         point="org.eclipse.sirius.externalJavaAction">
+      <javaActions
+            actionClass="edu.cmu.emfta.actions.SetEventToDesignTraceabilityAction"
+            id="edu.cmu.emfta.actions.SetEventToDesignTraceabilityAction">
+      </javaActions>
+   </extension>
+   <extension
+         point="org.eclipse.sirius.externalJavaAction">
+      <javaActions
+            actionClass="edu.cmu.emfta.actions.GenerateURIAction"
+            id="edu.cmu.emfta.actions.GenerateURIAction">
+      </javaActions>
+   </extension>
+   <extension
+         point="org.eclipse.sirius.externalJavaAction">
+      <javaActions
+            actionClass="edu.cmu.emfta.actions.SetEventToRequirementTraceabilityAction"
+            id="edu.cmu.emfta.actions.SetEventToRequirementTraceabilityAction">
+      </javaActions>
+   </extension>
    
 </plugin>

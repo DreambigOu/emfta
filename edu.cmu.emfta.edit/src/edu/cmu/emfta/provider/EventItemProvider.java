@@ -68,6 +68,7 @@ public class EventItemProvider
 			addDescriptionPropertyDescriptor(object);
 			addRelatedObjectPropertyDescriptor(object);
 			addReferenceCountPropertyDescriptor(object);
+			addURIPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -205,6 +206,28 @@ public class EventItemProvider
 	}
 
 	/**
+	 * This adds a property descriptor for the URI feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addURIPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_Event_URI_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_Event_URI_feature", "_UI_Event_type"),
+				 EmftaPackage.Literals.EVENT__URI,
+				 true,
+				 false,
+				 false,
+				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
+	}
+
+	/**
 	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
 	 * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
 	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
@@ -278,6 +301,7 @@ public class EventItemProvider
 			case EmftaPackage.EVENT__DESCRIPTION:
 			case EmftaPackage.EVENT__RELATED_OBJECT:
 			case EmftaPackage.EVENT__REFERENCE_COUNT:
+			case EmftaPackage.EVENT__URI:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 			case EmftaPackage.EVENT__GATE:

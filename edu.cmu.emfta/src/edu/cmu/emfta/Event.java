@@ -21,6 +21,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link edu.cmu.emfta.Event#getGate <em>Gate</em>}</li>
  *   <li>{@link edu.cmu.emfta.Event#getRelatedObject <em>Related Object</em>}</li>
  *   <li>{@link edu.cmu.emfta.Event#getReferenceCount <em>Reference Count</em>}</li>
+ *   <li>{@link edu.cmu.emfta.Event#getURI <em>URI</em>}</li>
  * </ul>
  *
  * @see edu.cmu.emfta.EmftaPackage#getEvent()
@@ -204,5 +205,31 @@ public interface Event extends EObject {
 	 * @generated
 	 */
 	void setReferenceCount(int value);
+
+	/**
+	 * Returns the value of the '<em><b>URI</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>URI</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>URI</em>' attribute.
+	 * @see #setURI(String)
+	 * @see edu.cmu.emfta.EmftaPackage#getEvent_URI()
+	 * @model id="true"
+	 * @generated
+	 */
+	String getURI();
+
+	/**
+	 * Sets the value of the '{@link edu.cmu.emfta.Event#getURI <em>URI</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>URI</em>' attribute.
+	 * @see #getURI()
+	 * @generated
+	 */
+	void setURI(String value);
 
 } // Event

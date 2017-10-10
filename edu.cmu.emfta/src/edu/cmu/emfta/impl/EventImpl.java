@@ -31,6 +31,7 @@ import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
  *   <li>{@link edu.cmu.emfta.impl.EventImpl#getGate <em>Gate</em>}</li>
  *   <li>{@link edu.cmu.emfta.impl.EventImpl#getRelatedObject <em>Related Object</em>}</li>
  *   <li>{@link edu.cmu.emfta.impl.EventImpl#getReferenceCount <em>Reference Count</em>}</li>
+ *   <li>{@link edu.cmu.emfta.impl.EventImpl#getURI <em>URI</em>}</li>
  * </ul>
  *
  * @generated
@@ -155,6 +156,26 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * @ordered
 	 */
 	protected int referenceCount = REFERENCE_COUNT_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getURI() <em>URI</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getURI()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String URI_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getURI() <em>URI</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getURI()
+	 * @generated
+	 * @ordered
+	 */
+	protected String uri = URI_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -340,6 +361,27 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public String getURI() {
+		return uri;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setURI(String newURI) {
+		String oldURI = uri;
+		uri = newURI;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, EmftaPackage.EVENT__URI, oldURI, uri));
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	@Override
 	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
 		switch (featureID) {
@@ -371,6 +413,8 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 				return getRelatedObject();
 			case EmftaPackage.EVENT__REFERENCE_COUNT:
 				return getReferenceCount();
+			case EmftaPackage.EVENT__URI:
+				return getURI();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -406,6 +450,9 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 			case EmftaPackage.EVENT__REFERENCE_COUNT:
 				setReferenceCount((Integer)newValue);
 				return;
+			case EmftaPackage.EVENT__URI:
+				setURI((String)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -439,6 +486,9 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 			case EmftaPackage.EVENT__REFERENCE_COUNT:
 				setReferenceCount(REFERENCE_COUNT_EDEFAULT);
 				return;
+			case EmftaPackage.EVENT__URI:
+				setURI(URI_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -465,6 +515,8 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 				return relatedObject != null && !relatedObject.isEmpty();
 			case EmftaPackage.EVENT__REFERENCE_COUNT:
 				return referenceCount != REFERENCE_COUNT_EDEFAULT;
+			case EmftaPackage.EVENT__URI:
+				return URI_EDEFAULT == null ? uri != null : !URI_EDEFAULT.equals(uri);
 		}
 		return super.eIsSet(featureID);
 	}
@@ -491,6 +543,8 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 		result.append(relatedObject);
 		result.append(", referenceCount: ");
 		result.append(referenceCount);
+		result.append(", URI: ");
+		result.append(uri);
 		result.append(')');
 		return result.toString();
 	}
