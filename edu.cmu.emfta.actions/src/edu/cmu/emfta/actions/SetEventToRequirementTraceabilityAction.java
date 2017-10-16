@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
-import edu.cmu.emfta.wizards.SetEventToDesignTraceabilityWizard;
+import edu.cmu.emfta.wizards.SetEventToRequirementTraceabilityWizard;
 
 public class SetEventToRequirementTraceabilityAction implements IExternalJavaAction {
 
@@ -117,7 +117,7 @@ public class SetEventToRequirementTraceabilityAction implements IExternalJavaAct
 	private void openInputFileDialog() {
 
 		Shell shell = new Shell();
-		WizardDialog dialog = new WizardDialog(shell, new SetEventToDesignTraceabilityWizard());
+		WizardDialog dialog = new WizardDialog(shell, new SetEventToRequirementTraceabilityWizard());
 		dialog.open();
 	}
 

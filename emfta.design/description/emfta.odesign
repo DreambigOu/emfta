@@ -197,8 +197,8 @@
               </firstModelOperations>
             </initialOperation>
           </ownedTools>
-          <ownedTools xsi:type="tool:ExternalJavaAction" name="SetEventToDesignTraceability" label="Set Traceability to Design Artifacts" id="edu.cmu.emfta.actions.SetEventToDesignTraceabilityAction"/>
           <ownedTools xsi:type="tool:ExternalJavaAction" name="SetEventToRequirementTraceability" label="Set Traceability to Requirement Artifacts" id="edu.cmu.emfta.actions.SetEventToRequirementTraceabilityAction"/>
+          <ownedTools xsi:type="tool:ExternalJavaAction" name="SetEventToDesignTraceability" label="Set Traceability to Design Artifacts" id="edu.cmu.emfta.actions.SetEventToDesignTraceabilityAction"/>
         </toolSections>
       </defaultLayer>
     </ownedRepresentations>
