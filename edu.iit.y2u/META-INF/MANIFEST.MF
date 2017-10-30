@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Y2U
+Bundle-SymbolicName: org.traceability.artifactPaser
+Bundle-Version: 1.0.0.qualifier
+Export-Package: Y2U,
+ Y2U.DataStructure,
+ Y2U.ReadWrite,
+ Y2U.Transformer,
+ org.uiuc.reqif.parser,
+ org.uiuc.statecharts
