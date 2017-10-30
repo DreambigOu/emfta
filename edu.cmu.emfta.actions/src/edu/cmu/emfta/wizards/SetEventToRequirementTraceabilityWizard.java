@@ -13,7 +13,7 @@ public class SetEventToRequirementTraceabilityWizard extends Wizard {
 
 	@Override
 	public String getWindowTitle() {
-		return "Export My Data";
+		return "Set Event To Requirement Traceability";
 	}
 
 	@Override

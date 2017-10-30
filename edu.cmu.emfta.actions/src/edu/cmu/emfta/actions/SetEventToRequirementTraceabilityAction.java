@@ -121,4 +121,11 @@ public class SetEventToRequirementTraceabilityAction implements IExternalJavaAct
 		dialog.open();
 	}
 
+//	public static double getVoltage(final FeatureInstance fi) {
+//
+//		Property voltage = GetProperties.lookupPropertyDefinition(fi, "Physical", "Voltage");
+//		UnitLiteral volts = GetProperties.findUnitLiteral(voltage, "V");
+//
+//		return PropertyUtils.getScaledNumberValue(fi, voltage, volts, 0.0);
+//	}
 }
