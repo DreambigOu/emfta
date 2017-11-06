@@ -18,6 +18,7 @@
 
 package edu.cmu.emfta.actions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -31,6 +32,8 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFTable;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTTable;
@@ -160,7 +163,20 @@ public class GenerateURI {
 
 					System.out.println("[GenerateURI] event name = " + e.getName());
 					System.out.println("[GenerateURI] toPlatformString = " + uri.toPlatformString(true));
+					System.out.println("[GenerateURI] toPlatformString false = " + uri.toPlatformString(false));
+					System.out.println("[GenerateURI] toFileString() = " + uri.toFileString());
+					System.out.println("[GenerateURI] path = " + uri.path());
+					System.out.println("[GenerateURI] device = " + uri.device());
+					System.out
+					.println("[GenerateURI] EcoreUtil.getIdentification() = " + EcoreUtil.getIdentification(e));
 					System.out.println("[GenerateURI] toString = " + uri.toString());
+
+					//get object which represents the workspace
+					IWorkspace workspace = ResourcesPlugin.getWorkspace();
+					//get location of workspace (java.io.File)
+					File workspaceDirectory = workspace.getRoot().getLocation().toFile();
+					System.out.println("[GenerateURI] IWorkspace = " + workspaceDirectory.getAbsolutePath());
+
 				}
 			}
 			System.out.print("\n");

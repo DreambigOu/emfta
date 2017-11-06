@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
+import edu.cmu.emfta.Event;
 import edu.cmu.emfta.wizards.SetEventToRequirementTraceabilityWizard;
 
 public class SetEventToRequirementTraceabilityAction implements IExternalJavaAction {
@@ -52,7 +53,8 @@ public class SetEventToRequirementTraceabilityAction implements IExternalJavaAct
 
 				if (target instanceof edu.cmu.emfta.Event) {
 					// generateURI(((edu.cmu.emfta.Event) target));
-					openInputFileDialog();
+					Event event = (Event) target;
+					openInputFileDialog(event);
 					return;
 				}
 			}
@@ -114,10 +116,11 @@ public class SetEventToRequirementTraceabilityAction implements IExternalJavaAct
 		return false;
 	}
 
-	private void openInputFileDialog() {
+	private void openInputFileDialog(Event event) {
+
 
 		Shell shell = new Shell();
-		WizardDialog dialog = new WizardDialog(shell, new SetEventToRequirementTraceabilityWizard());
+		WizardDialog dialog = new WizardDialog(shell, new SetEventToRequirementTraceabilityWizard(event));
 		dialog.open();
 	}
 

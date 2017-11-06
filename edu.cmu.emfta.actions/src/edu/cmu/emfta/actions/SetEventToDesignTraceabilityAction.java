@@ -53,7 +53,7 @@ public class SetEventToDesignTraceabilityAction implements IExternalJavaAction {
 
 				if (target instanceof edu.cmu.emfta.Event) {
 					// generateURI(((edu.cmu.emfta.Event) target));
-					openInputFileDialog();
+					openInputFileDialog((Event) target);
 					return;
 				}
 			}
@@ -108,10 +108,10 @@ public class SetEventToDesignTraceabilityAction implements IExternalJavaAction {
 		return false;
 	}
 
-	private void openInputFileDialog() {
+	private void openInputFileDialog(Event target) {
 
 		Shell shell = new Shell();
-		WizardDialog dialog = new WizardDialog(shell, new SetEventToDesignTraceabilityWizard());
+		WizardDialog dialog = new WizardDialog(shell, new SetEventToDesignTraceabilityWizard(target));
 		dialog.open();
 	}
 

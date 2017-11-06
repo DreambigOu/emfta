@@ -3,7 +3,6 @@ package edu.cmu.emfta.wizards;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 
@@ -13,6 +12,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -28,32 +28,66 @@ import org.osate.aadl2.Connection;
 import org.osate.aadl2.ConnectionEnd;
 import org.osate.aadl2.Subcomponent;
 import org.osate.aadl2.modelsupport.util.AadlUtil;
-import org.uiuc.reqif.parser.ReqifParser;
+
+import edu.cmu.emfta.Event;
+import edu.uiuc.traceability.artifacts.RequirementArtifact;
+import edu.uiuc.traceability.reqif.parser.ReqifParser;
 
 public class SetEventToRequirementTraceabilityPageOne extends WizardPage {
 
-	private Text text1;
-	private Composite container;
-	private String fileContent;
+	private Event selectedRootEvent;
+	private Text selectedRootEventText;
+
+	private Text selectedFilePathText;
+	private Text selectedRequirementIdentifierText;
+	private Text selectedRequirementLastChangeText;
+	private Text selectedRequirementDescriptionText;
+
+	private Composite composite;
 	private Table table;
 	private int rowCount = 5, columnCount = 4;
+
 	private ReqifParser reqifParser;
+	private RequirementArtifact selectedRequirementArtifact;
+	private List<Entry<String, RequirementArtifact>> requirementArtifactList;
 
 	protected SetEventToRequirementTraceabilityPageOne() {
 		super("Page One");
-		setTitle("Set Event To Requirement Traceability - Step One");
+		setTitle("Set Event To Requirement Traceability");
 		setDescription("Wizard Step 1");
 	}
 
 	@Override
 	public void createControl(Composite parent) {
-		container = new Composite(parent, SWT.NONE);
+		composite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
-		container.setLayout(layout);
-		layout.numColumns = 2;
+		layout.numColumns = 3;
+		composite.setLayout(layout);
 
-		Label label1 = new Label(container, SWT.LEFT);
-		label1.setText("Select a Requirement Interchange Format file (*.reqif) ");
+
+		Label selectFileLable = new Label(composite, SWT.LEFT);
+		selectFileLable.setText("Select a Requirement Interchange Format file (*.reqif) ");
+		GridData gridDataSelectFileLable = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING,
+				GridData.VERTICAL_ALIGN_CENTER, false, false);
+		gridDataSelectFileLable.horizontalSpan = 2;
+		selectFileLable.setLayoutData(gridDataSelectFileLable);
+
+		Button selectFileButton = new Button(composite, SWT.PUSH);
+		selectFileButton.setText("Select");
+		selectFileButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Shell shell = parent.getShell();
+				openDialogs(shell);
+//				readAllAadlFiles();
+			}
+		});
+
+		GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING, GridData.VERTICAL_ALIGN_CENTER, false,
+				false);
+		gridData.horizontalSpan = 1;
+		selectFileButton.setLayoutData(gridData);
+
 
 //		text1 = new Text(container, SWT.BORDER | SWT.SINGLE);
 //		text1.setText("");
@@ -76,25 +110,22 @@ public class SetEventToRequirementTraceabilityPageOne extends WizardPage {
 //		text1.setLayoutData(gd);
 
 
-		Button button = new Button(container, SWT.PUSH);
-		button.setText("Select");
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				Shell shell = parent.getShell();
-				openDialogs(shell);
-//				readAllAadlFiles();
-			}
-		});
+
 
 		// Add new table
 //		Display display = new Display();
 //		Shell shell = new Shell(display);
 //		final Table table = new Table(shell, SWT.BORDER | SWT.V_SCROLL | SWT.FULL_SELECTION);
-		table = new Table(container, SWT.BORDER | SWT.V_SCROLL | SWT.FULL_SELECTION);
+		table = new Table(composite, SWT.BORDER | SWT.V_SCROLL | SWT.FULL_SELECTION);
+
+		GridData gridDataTable = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING, GridData.VERTICAL_ALIGN_CENTER,
+				false, false);
+		gridDataTable.horizontalSpan = 3;
+		gridDataTable.grabExcessHorizontalSpace = true;
+		table.setLayoutData(gridDataTable);
+
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
-
 
 		// Print column title
 		for (int i = 0; i < columnCount; i++) {
@@ -103,19 +134,19 @@ public class SetEventToRequirementTraceabilityPageOne extends WizardPage {
 			switch(i) {
 
 			case 0:
-				column.setText("Number");
+				column.setText("Index");
 				break;
 
 			case 1:
-				column.setText("Requirement");
+				column.setText("Description");
 				break;
 
 			case 2:
-				column.setText("Identifier");
+				column.setText("Last Change");
 				break;
 
 			case 3:
-				column.setText("Others");
+				column.setText("Identifier");
 				break;
 			}
 		}
@@ -124,15 +155,79 @@ public class SetEventToRequirementTraceabilityPageOne extends WizardPage {
 			table.getColumn(i).pack();
 		}
 
-		Point size = table.computeSize(SWT.DEFAULT, 400);
+		Point size = table.computeSize(800, 400);
 		table.setSize(size);
+
+		// Print the selected row in the table
+		table.addListener(SWT.MouseDown, event -> {
+			Point pt = new Point(event.x, event.y);
+			TableItem item = table.getItem(pt);
+			if (item == null) {
+				return;
+			}
+
+			this.selectedRequirementArtifact = (this.requirementArtifactList.get(Integer.valueOf(item.getText(0)) - 1))
+					.getValue();
+
+			this.selectedRequirementDescriptionText.setText(item.getText(1));
+			this.selectedRequirementLastChangeText.setText(item.getText(2));
+			this.selectedRequirementIdentifierText.setText(item.getText(3));
+
+			System.out.println("[Index]" + item.getText(0));
+			System.out.println("[Description]" + item.getText(1));
+			System.out.println("[LastChange]" + item.getText(2));
+			System.out.println("[Identifier]" + item.getText(3));
+
+			if (this.selectedRequirementArtifact != null) {
+				setPageComplete(true);
+			}
+
+		});
+
+		// Display result
+		Label selectedRootEventLabel = new Label(composite, SWT.LEFT);
+		selectedRootEventLabel.setText("Root event name: ");
+		selectedRootEventText = new Text(composite, SWT.BORDER | SWT.SINGLE);
+		selectedRootEventText.setText(selectedRootEvent.getName());
+		GridData gridDataSelectedRootEvent = new GridData(GridData.FILL, GridData.CENTER, true, false);
+		gridDataSelectedRootEvent.horizontalSpan = 2;
+		selectedRootEventText.setLayoutData(gridDataSelectedRootEvent);
+
+		Label seselectedFilePathLabel = new Label(composite, SWT.LEFT);
+		seselectedFilePathLabel.setText("Reqif file path: ");
+		selectedFilePathText = new Text(composite, SWT.BORDER | SWT.SINGLE);
+		GridData gridDataSelectedFilePath = new GridData(GridData.FILL, GridData.CENTER, true, false);
+		gridDataSelectedFilePath.horizontalSpan = 2;
+		selectedFilePathText.setLayoutData(gridDataSelectedFilePath);
+
+		Label selectedRequirementDescriptionLabel = new Label(composite, SWT.LEFT);
+		selectedRequirementDescriptionLabel.setText("Requirement Description: ");
+		selectedRequirementDescriptionText = new Text(composite, SWT.BORDER | SWT.SINGLE);
+		GridData gridDataSelectedRequirementDescription = new GridData(GridData.FILL, GridData.CENTER, true, false);
+		gridDataSelectedRequirementDescription.horizontalSpan = 2;
+		selectedRequirementDescriptionText.setLayoutData(gridDataSelectedRequirementDescription);
+
+
+		Label selectedRequirementLastChangeLabel = new Label(composite, SWT.LEFT);
+		selectedRequirementLastChangeLabel.setText("Requirement Last Change: ");
+		selectedRequirementLastChangeText = new Text(composite, SWT.BORDER | SWT.SINGLE);
+		GridData gridDataSelectedRequirementLastChange = new GridData(GridData.FILL, GridData.CENTER, true, false);
+		gridDataSelectedRequirementLastChange.horizontalSpan = 2;
+		selectedRequirementLastChangeText.setLayoutData(gridDataSelectedRequirementLastChange);
+
+		Label selectedRequirementIdentifierLabel = new Label(composite, SWT.LEFT);
+		selectedRequirementIdentifierLabel.setText("Requirement Identifier: ");
+		selectedRequirementIdentifierText = new Text(composite, SWT.BORDER | SWT.SINGLE);
+		GridData gridDataRequirementIdentifier = new GridData(GridData.FILL, GridData.CENTER, true, false);
+		gridDataRequirementIdentifier.horizontalSpan = 2;
+		selectedRequirementIdentifierText.setLayoutData(gridDataRequirementIdentifier);
+
 //		shell.pack();
-
-
+		parent.pack();
 
 		// required to avoid an error in the system
-		setControl(container);
-		setPageComplete(false);
+		setControl(composite);
+//		setPageComplete(true);
 
 	}
 
@@ -142,23 +237,23 @@ public class SetEventToRequirementTraceabilityPageOne extends WizardPage {
 		// Set the text
 		fileDialog.setText("Select File");
 
-		// Set filter on .txt files
 		fileDialog.setFilterExtensions(new String[] { "*.reqif" });
-		// Put in a readable name for the filter
-//		fileDialog.setFilterNames(new String[] { "Textfiles(*.txt)" });
 		fileDialog.setFilterNames(new String[] { "Requirement Intercahnge Format (*.reqif)" });
 
 		// Open Dialog and save result of selection
 		String selectedFilePath = fileDialog.open();
+		this.selectedFilePathText.setText(selectedFilePath);
 		System.out.println(selectedFilePath);
 
 		if (selectedFilePath != null) {
 
 			reqifParser = new ReqifParser(selectedFilePath);
 			reqifParser.parse();
-			List<Entry<String, String>> idAndRequirementList = reqifParser.getIdentifierAndRequirementList();
-			renderTable(idAndRequirementList);
+			requirementArtifactList = reqifParser.getRequirementArtifacts();
+			renderTable(requirementArtifactList);
 		}
+
+		shell.pack();
 
 //		System.out.println(fileContent);
 
@@ -183,10 +278,6 @@ public class SetEventToRequirementTraceabilityPageOne extends WizardPage {
 //		System.out.println(returnCode);
 	}
 
-	public String getText1() {
-		return text1.getText();
-	}
-
 	private String readFile(String pathname) throws IOException {
 
 		File file = new File(pathname);
@@ -204,27 +295,19 @@ public class SetEventToRequirementTraceabilityPageOne extends WizardPage {
 		}
 	}
 
-	private void renderTable(List<Entry<String, String>> idAndRequirementList) {
-
-
-//		ReqSpec reqspec;
-//		try {
-//			reqspec = reqspecParser.parse(input);
-//			System.out.println("[reqspec.getParts().toString()] " + "" + reqspec.getParts().toString());
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
+	private void renderTable(List<Entry<String, RequirementArtifact>> requirementArtifactsList) {
 
 		//		Print data by rows
 		int counter = 1;
-		for (Map.Entry<String, String> entry : idAndRequirementList) {
+//		for (Map.Entry<String, RequirementArtifact> entry : requirementArtifactsList) {
+
+		for (int i = 0; i < requirementArtifactsList.size(); i++) {
+
 			TableItem item = new TableItem(table, SWT.NONE);
-			item.setText(0, String.valueOf(counter++));
-			item.setText(1, entry.getValue());
-			item.setText(2, entry.getKey());
-			item.setText(3, "");
+			item.setText(0, String.valueOf(i + 1));
+			item.setText(1, requirementArtifactsList.get(i).getValue().getOriginDescription());
+			item.setText(2, requirementArtifactsList.get(i).getValue().getOriginLastChange());
+			item.setText(3, requirementArtifactsList.get(i).getKey());
 		}
 
 		for (int i = 0; i < columnCount; i++) {
@@ -234,20 +317,6 @@ public class SetEventToRequirementTraceabilityPageOne extends WizardPage {
 		Point size = table.computeSize(SWT.DEFAULT, 400);
 		table.setSize(size);
 
-		// Print the selected row in the table
-		table.addListener(SWT.MouseDown, event -> {
-			Point pt = new Point(event.x, event.y);
-			TableItem item = table.getItem(pt);
-			if (item == null) {
-				return;
-			}
-
-			System.out.println("[Number]" + item.getText(0));
-			System.out.println("[Description]" + item.getText(1));
-			System.out.println("[ID]" + item.getText(2));
-			System.out.println("[null]" + item.getText(3));
-
-		});
 
 		// shell.open();
 
@@ -257,6 +326,14 @@ public class SetEventToRequirementTraceabilityPageOne extends WizardPage {
 //			}
 //		}
 //		display.dispose();
+	}
+
+	public Event getSelectedRootEvent() {
+		return selectedRootEvent;
+	}
+
+	public void setSelectedRootEvent(Event selectedRootEvent) {
+		this.selectedRootEvent = selectedRootEvent;
 	}
 
 	private void readAllAadlFiles() {
@@ -293,5 +370,9 @@ public class SetEventToRequirementTraceabilityPageOne extends WizardPage {
 				System.out.println("[readAllAadlFiles ceAllLastSource]:      " + ceAllLastSource.getFullName());
 			}
 		}
+	}
+
+	public RequirementArtifact getSelectedRequirementArtifact() {
+		return selectedRequirementArtifact;
 	}
 }

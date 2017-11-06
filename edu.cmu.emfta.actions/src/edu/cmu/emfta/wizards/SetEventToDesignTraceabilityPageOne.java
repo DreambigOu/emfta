@@ -1,7 +1,6 @@
 package edu.cmu.emfta.wizards;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jface.wizard.WizardPage;
@@ -9,6 +8,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -19,14 +19,24 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.uiuc.statecharts.StatechartReader;
 
-import Y2U.DataStructure.State;
+import edu.cmu.emfta.Event;
+import edu.uiuc.traceability.artifacts.AutomataArtifact;
+import edu.uiuc.traceability.statecharts.StatechartReader;
 
 public class SetEventToDesignTraceabilityPageOne extends WizardPage {
 
 	private Text text1;
-	private Composite container;
+	private Composite composite;
+
+	private Event selectedBasicEvent;
+	private Text selectedBasicEventText;
+	private Text selectedBasicEventSafeGuardText;
+
+	private Text selectedFilePathText;
+	private Text selectedAutomataNameText;
+	private Text selectedAutomataIdentifierText;
+	private Text selectedAutomataLastChangeText;
 
 	private String fileContent;
 	private Table table;
@@ -34,45 +44,32 @@ public class SetEventToDesignTraceabilityPageOne extends WizardPage {
 //	private ParseHelper<ReqSpec> reqspecParser;
 	private StatechartReader sr;
 
+	private AutomataArtifact selectedAutomataArtifact;
+	private List<Entry<String, AutomataArtifact>> automataArtifactList;
+
 	protected SetEventToDesignTraceabilityPageOne() {
 		super("Page One");
-		setTitle("Set Event To Design Traceability - Step One");
+		setTitle("Set Event To Design Traceability");
 		setDescription("Wizard Step 1");
 	}
 
 	@Override
 	public void createControl(Composite parent) {
-		container = new Composite(parent, SWT.NONE);
+		composite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
-		container.setLayout(layout);
-		layout.numColumns = 2;
+		composite.setLayout(layout);
+		layout.numColumns = 3;
 
-		Label label1 = new Label(container, SWT.LEFT);
-		label1.setText("Select a Yakindu statechart file (*.sct)");
-//
-//		text1 = new Text(container, SWT.BORDER | SWT.SINGLE);
-//		text1.setText("");
-//		text1.addKeyListener(new KeyListener() {
-//
-//			@Override
-//			public void keyPressed(KeyEvent e) {
-//			}
-//
-//			@Override
-//			public void keyReleased(KeyEvent e) {
-//				if (!text1.getText().isEmpty()) {
-//					setPageComplete(true);
-//
-//				}
-//			}
-//
-//		});
-//		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-//		text1.setLayoutData(gd);
+		Label selectFileLable = new Label(composite, SWT.LEFT);
+		selectFileLable.setText("Select a Yakindu statechart file (*.sct)");
+		GridData gridDataSelectFileLable = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING,
+				GridData.VERTICAL_ALIGN_CENTER, false, false);
+		gridDataSelectFileLable.horizontalSpan = 2;
+		selectFileLable.setLayoutData(gridDataSelectFileLable);
 
-		Button button = new Button(container, SWT.PUSH);
-		button.setText("Select");
-		button.addSelectionListener(new SelectionAdapter() {
+		Button selectFileButton = new Button(composite, SWT.PUSH);
+		selectFileButton.setText("Select");
+		selectFileButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Shell shell = parent.getShell();
@@ -80,11 +77,21 @@ public class SetEventToDesignTraceabilityPageOne extends WizardPage {
 			}
 		});
 
+		GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING, GridData.VERTICAL_ALIGN_CENTER, false,
+				false);
+		gridData.horizontalSpan = 1;
+		selectFileButton.setLayoutData(gridData);
+
 		// Add new table
 //		Display display = new Display();
 //		Shell shell = new Shell(display);
 //		final Table table = new Table(shell, SWT.BORDER | SWT.V_SCROLL | SWT.FULL_SELECTION);
-		table = new Table(container, SWT.BORDER | SWT.V_SCROLL | SWT.FULL_SELECTION);
+		table = new Table(composite, SWT.BORDER | SWT.V_SCROLL | SWT.FULL_SELECTION);
+		GridData gridDataTable = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING, GridData.VERTICAL_ALIGN_CENTER,
+				false, false);
+		gridDataTable.horizontalSpan = 3;
+		gridDataTable.grabExcessHorizontalSpace = true;
+		table.setLayoutData(gridDataTable);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
@@ -95,11 +102,11 @@ public class SetEventToDesignTraceabilityPageOne extends WizardPage {
 			switch (i) {
 
 			case 0:
-				column.setText("Region");
+				column.setText("Number");
 				break;
 
 			case 1:
-				column.setText("State Name");
+				column.setText("Automata Name");
 				break;
 
 			case 2:
@@ -107,7 +114,7 @@ public class SetEventToDesignTraceabilityPageOne extends WizardPage {
 				break;
 
 			case 3:
-				column.setText("Behavior");
+				column.setText("Others");
 				break;
 			}
 		}
@@ -116,13 +123,88 @@ public class SetEventToDesignTraceabilityPageOne extends WizardPage {
 			table.getColumn(i).pack();
 		}
 
-		Point size = table.computeSize(SWT.DEFAULT, 400);
+		Point size = table.computeSize(800, 400);
 		table.setSize(size);
-//		shell.pack();
+
+		// Print the selected row in the table
+		table.addListener(SWT.MouseDown, event -> {
+			Point pt = new Point(event.x, event.y);
+			TableItem item = table.getItem(pt);
+			if (item == null) {
+				return;
+			}
+
+			System.out.println("[Index]" + item.getText(0));
+			this.selectedAutomataArtifact = (this.automataArtifactList.get(Integer.valueOf(item.getText(0)) - 1))
+					.getValue();
+
+			this.selectedAutomataNameText.setText(item.getText(1));
+			this.selectedAutomataIdentifierText.setText(item.getText(2));
+
+			System.out.println("[Index]" + item.getText(0));
+			System.out.println("[Name]" + item.getText(1));
+			System.out.println("[Identifier]" + item.getText(2));
+			System.out.println("[Others]" + item.getText(3));
+
+			if (this.selectedAutomataArtifact != null) {
+				setPageComplete(true);
+			}
+
+		});
+
+		// Display result
+		Label selectedBasicEventLabel = new Label(composite, SWT.LEFT);
+		selectedBasicEventLabel.setText("Basic event name: ");
+		selectedBasicEventText = new Text(composite, SWT.BORDER | SWT.SINGLE  | SWT.READ_ONLY);
+		selectedBasicEventText.setText(selectedBasicEvent.getName());
+		GridData gridDataSelectedBasicEvent = new GridData(GridData.FILL, GridData.CENTER, true, false);
+		gridDataSelectedBasicEvent.horizontalSpan = 2;
+		selectedBasicEventText.setLayoutData(gridDataSelectedBasicEvent);
+
+		Label selectedBasicEventSafeGuardLabel = new Label(composite, SWT.LEFT);
+		selectedBasicEventSafeGuardLabel.setText("Is the selected basic event a safe guard? ");
+		selectedBasicEventSafeGuardText = new Text(composite, SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY);
+		selectedBasicEventSafeGuardText.setText(this.selectedBasicEvent.isSafeGuard() ? "true" : "false");
+		GridData gridDataSelectedBasicEventSafeGuard = new GridData(GridData.FILL, GridData.CENTER, true, false);
+		gridDataSelectedBasicEventSafeGuard.horizontalSpan = 2;
+		selectedBasicEventSafeGuardText.setLayoutData(gridDataSelectedBasicEventSafeGuard);
+
+		Label seselectedFilePathLabel = new Label(composite, SWT.LEFT);
+		seselectedFilePathLabel.setText("Statechart file path: ");
+		selectedFilePathText = new Text(composite, SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY);
+		GridData gridDataSelectedFilePath = new GridData(GridData.FILL, GridData.CENTER, true, false);
+		gridDataSelectedFilePath.horizontalSpan = 2;
+		selectedFilePathText.setLayoutData(gridDataSelectedFilePath);
+
+//		private Text selectedAutomataIdentifierText;
+//		private Text selectedAutomataLastChangeText;
+
+		Label selectedAutomataName = new Label(composite, SWT.LEFT);
+		selectedAutomataName.setText("Automata Name: ");
+		selectedAutomataNameText = new Text(composite, SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY);
+		GridData gridDataSelectedAutomataName = new GridData(GridData.FILL, GridData.CENTER, true, false);
+		gridDataSelectedAutomataName.horizontalSpan = 2;
+		selectedAutomataNameText.setLayoutData(gridDataSelectedAutomataName);
+
+		Label selectedAutomataIdentifierLabel = new Label(composite, SWT.LEFT);
+		selectedAutomataIdentifierLabel.setText("Automata Identifier: ");
+		selectedAutomataIdentifierText = new Text(composite, SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY);
+		GridData gridDataAutomataIdentifier = new GridData(GridData.FILL, GridData.CENTER, true, false);
+		gridDataAutomataIdentifier.horizontalSpan = 2;
+		selectedAutomataIdentifierText.setLayoutData(gridDataAutomataIdentifier);
+
+		Label selectedAutomataLastChangeLabel = new Label(composite, SWT.LEFT);
+		selectedAutomataLastChangeLabel.setText("Automata Last Change: ");
+		selectedAutomataLastChangeText = new Text(composite, SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY);
+		GridData gridDataSelectedAutomataLastChange = new GridData(GridData.FILL, GridData.CENTER, true, false);
+		gridDataSelectedAutomataLastChange.horizontalSpan = 2;
+		selectedAutomataLastChangeText.setLayoutData(gridDataSelectedAutomataLastChange);
+
+		parent.pack();
 
 		// required to avoid an error in the system
-		setControl(container);
-		setPageComplete(false); // original
+		setControl(composite);
+//		setPageComplete(true);
 	}
 
 	public String getText1() {
@@ -142,17 +224,19 @@ public class SetEventToDesignTraceabilityPageOne extends WizardPage {
 
 		// Open Dialog and save result of selection
 		String selectedFilePath = fileDialog.open();
+		this.selectedFilePathText.setText(selectedFilePath);
+//		this.selectedAutomataLastChangeText.setText();
 		System.out.println(selectedFilePath);
 
-		if (!selectedFilePath.isEmpty()) {
+		if (selectedFilePath != null) {
 
 			sr = new StatechartReader(selectedFilePath);
 			sr.read();
-			List<Entry<String, State>> states = sr.getStates();
-			renderTable(states);
+			this.automataArtifactList = sr.getAutomataArtifacts();
+			renderTable(this.automataArtifactList);
 		}
 
-		System.out.println(fileContent);
+		shell.pack();
 
 //		// Directly standard selection
 //		DirectoryDialog dirDialog = new DirectoryDialog(shell);
@@ -176,24 +260,19 @@ public class SetEventToDesignTraceabilityPageOne extends WizardPage {
 	}
 
 //	private void renderTable(String input) {
-	private void renderTable(List<Entry<String, State>> input) {
+	private void renderTable(List<Entry<String, AutomataArtifact>> automatas) {
 
-		// Print data by rows
-//		for (int i = 0; i < rowCount; i++) {
-//		for (int i = 0; i < input.size(); i++) {
-//			TableItem item = new TableItem(table, SWT.NONE);
-//			item.setText(0, input.get);
-//			item.setText(1, input.get(i).getName());
-//			item.setText(2, input.get(i).getId());
-//			item.setText(3, "behavior (tbc)");
-//		}
+		if (automatas.size() > 0) {
+			this.selectedAutomataLastChangeText.setText(automatas.get(0).getValue().getOriginLastChange());
+		}
 
-		for (Map.Entry<String, State> entry : input) {
+		for (int i = 0; i < automatas.size(); i++) {
+
 			TableItem item = new TableItem(table, SWT.NONE);
-			item.setText(0, entry.getKey());
-			item.setText(1, entry.getValue().getName());
-			item.setText(2, entry.getValue().getId());
-			item.setText(3, "behavior (tbc)");
+			item.setText(0, String.valueOf(i + 1));
+			item.setText(1, automatas.get(i).getValue().getOriginName());
+			item.setText(2, automatas.get(i).getValue().getOriginIdentifier());
+			item.setText(3, "");
 		}
 
 		for (int i = 0; i < columnCount; i++) {
@@ -202,35 +281,26 @@ public class SetEventToDesignTraceabilityPageOne extends WizardPage {
 
 		Point size = table.computeSize(SWT.DEFAULT, 400);
 		table.setSize(size);
+	}
 
-		// Print the selected row in the table
-		table.addListener(SWT.MouseDown, event -> {
-			Point pt = new Point(event.x, event.y);
-			TableItem item = table.getItem(pt);
-			if (item == null) {
-				return;
-			}
+	/**
+	 * @return the selectedBasicEvent
+	 */
+	public Event getSelectedBasicEvent() {
+		return selectedBasicEvent;
+	}
 
-			System.out.println("[Region]" + item.getText(0));
-			System.out.println("[State]" + item.getText(1));
-			System.out.println("[ID]" + item.getText(2));
-			System.out.println("[Behavior]" + item.getText(3));
+	/**
+	 * @param selectedBasicEvent the selectedBasicEvent to set
+	 */
+	public void setSelectedBasicEvent(Event selectedBasicEvent) {
+		this.selectedBasicEvent = selectedBasicEvent;
+	}
 
-			//			for (int i = 0; i < columnCount; i++) {
-//				Rectangle rect = item.getBounds(i);
-//				if (rect.contains(pt)) {
-//					int index = table.indexOf(item);
-//					System.out.println("Item " + index + "-" + i);
-//				}
-//			}
-		});
-
-		// shell.open();
-//		while (!shell.isDisposed()) {
-//			if (!display.readAndDispatch()) {
-//				display.sleep();
-//			}
-//		}
-//		display.dispose();
+	/**
+	 * @return the selectedAutomataArtifact
+	 */
+	public AutomataArtifact getSelectedAutomataArtifact() {
+		return selectedAutomataArtifact;
 	}
 }
