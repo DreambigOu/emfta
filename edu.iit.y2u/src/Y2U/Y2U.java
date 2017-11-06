@@ -18,7 +18,7 @@ import javax.swing.SwingConstants;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.uiuc.statecharts.StatechartReader;
+import edu.uiuc.traceability.statecharts.StatechartReader;
 
 
 public class Y2U {

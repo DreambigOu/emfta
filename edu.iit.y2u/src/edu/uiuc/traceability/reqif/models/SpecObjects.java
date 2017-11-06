@@ -1,4 +1,4 @@
-package org.uiuc.reqif.models;
+package edu.uiuc.traceability.reqif.models;
 
 import java.util.List;
 

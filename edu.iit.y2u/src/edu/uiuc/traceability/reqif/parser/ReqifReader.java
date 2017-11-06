@@ -1,4 +1,4 @@
-package org.uiuc.reqif.parser;
+package edu.uiuc.traceability.reqif.parser;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,9 +7,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.uiuc.reqif.models.SpecObjects;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import edu.uiuc.traceability.reqif.models.SpecObjects;
 
 
 //import Y2U.DataStructure.Model;

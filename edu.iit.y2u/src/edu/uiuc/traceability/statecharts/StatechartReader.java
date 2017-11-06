@@ -1,5 +1,7 @@
-package org.uiuc.statecharts;
+package edu.uiuc.traceability.statecharts;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,20 +14,14 @@ import org.w3c.dom.NodeList;
 import Y2U.DataStructure.Model;
 import Y2U.DataStructure.State;
 import Y2U.ReadWrite.YakinduReader;
-import Y2U.Transformer.ElementTransformer;
-import Y2U.Transformer.PositionSetter;
-import Y2U.Transformer.Synchronizer;
+import edu.uiuc.traceability.artifacts.AutomataArtifact;
 
 
 public class StatechartReader {
 
 	private String filePath = "";
-	private String yakinduFilePath;
 	private Model model;
 	private YakinduReader reader;
-	private ElementTransformer elementTransformer;
-	private PositionSetter positionSetter;
-	private Synchronizer synchronizer;
 
 	private Document yakinduDoc;
 	private Element rootEle;
@@ -46,6 +42,39 @@ public class StatechartReader {
 
 		yakinduDoc = reader.read();
 		rootEle = yakinduDoc.getDocumentElement();
+	}
+
+	public List<Entry<String, AutomataArtifact>> getAutomataArtifacts() {
+
+		List<Entry<String, AutomataArtifact>> result = new ArrayList<>();
+
+		// transform automata
+		NodeList automataEleList = rootEle.getElementsByTagName("regions");
+		if (automataEleList != null) {
+
+			for (int i = 0; i < automataEleList.getLength(); i++) {
+
+				AutomataArtifact automata = new AutomataArtifact();
+
+				Element automataEle = (Element) automataEleList.item(i);
+
+				automata.setOriginIdentifier(automataEle.getAttribute("xmi:id"));
+				automata.setOriginName(automataEle.getAttribute("name"));
+				automata.setFilePath(this.filePath);
+
+				// Same time format as is in reqif format
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+				automata.setOriginLastChange(sdf.format(new File(this.filePath).lastModified()));
+
+				System.out.println(automata.toString());
+
+				Entry<String, AutomataArtifact> entry = new SimpleEntry<String, AutomataArtifact>(
+						automata.getOriginIdentifier(), automata);
+				result.add(entry);
+			}
+		}
+
+		return result;
 	}
 
 	public List<Entry<String, State>> getStates() {
@@ -102,7 +131,8 @@ public class StatechartReader {
 							state.setName(stateName);
 							state.setId(stateID);
 
-							Entry<String, State> entry = new SimpleEntry(automataEle.getAttribute("name"), state);
+							Entry<String, State> entry = new SimpleEntry<String, State>(
+									automataEle.getAttribute("name"), state);
 							result.add(entry);
 						}
 					}

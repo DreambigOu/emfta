@@ -1,4 +1,4 @@
-package org.uiuc.reqif.models;
+package edu.uiuc.traceability.reqif.models;
 
 public class SpecObject {
 	String Identifier;
