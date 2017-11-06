@@ -69,6 +69,8 @@ public class EventItemProvider
 			addRelatedObjectPropertyDescriptor(object);
 			addReferenceCountPropertyDescriptor(object);
 			addURIPropertyDescriptor(object);
+			addUuidPropertyDescriptor(object);
+			addSafeGuardPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -228,6 +230,50 @@ public class EventItemProvider
 	}
 
 	/**
+	 * This adds a property descriptor for the Uuid feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addUuidPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_Event_uuid_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_Event_uuid_feature", "_UI_Event_type"),
+				 EmftaPackage.Literals.EVENT__UUID,
+				 true,
+				 false,
+				 false,
+				 ItemPropertyDescriptor.GENERIC_VALUE_IMAGE,
+				 null,
+				 null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Safe Guard feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addSafeGuardPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_Event_safeGuard_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_Event_safeGuard_feature", "_UI_Event_type"),
+				 EmftaPackage.Literals.EVENT__SAFE_GUARD,
+				 true,
+				 false,
+				 false,
+				 ItemPropertyDescriptor.BOOLEAN_VALUE_IMAGE,
+				 null,
+				 null));
+	}
+
+	/**
 	 * This specifies how to implement {@link #getChildren} and is used to deduce an appropriate feature for an
 	 * {@link org.eclipse.emf.edit.command.AddCommand}, {@link org.eclipse.emf.edit.command.RemoveCommand} or
 	 * {@link org.eclipse.emf.edit.command.MoveCommand} in {@link #createCommand}.
@@ -302,6 +348,8 @@ public class EventItemProvider
 			case EmftaPackage.EVENT__RELATED_OBJECT:
 			case EmftaPackage.EVENT__REFERENCE_COUNT:
 			case EmftaPackage.EVENT__URI:
+			case EmftaPackage.EVENT__UUID:
+			case EmftaPackage.EVENT__SAFE_GUARD:
 				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 				return;
 			case EmftaPackage.EVENT__GATE:

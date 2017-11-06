@@ -2,11 +2,8 @@
  */
 package edu.cmu.emfta.impl;
 
-import edu.cmu.emfta.EmftaPackage;
-import edu.cmu.emfta.Event;
-import edu.cmu.emfta.EventType;
-import edu.cmu.emfta.Gate;
 import java.util.Collection;
+
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.NotificationChain;
 import org.eclipse.emf.common.util.EList;
@@ -15,6 +12,11 @@ import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
+
+import edu.cmu.emfta.EmftaPackage;
+import edu.cmu.emfta.Event;
+import edu.cmu.emfta.EventType;
+import edu.cmu.emfta.Gate;
 
 /**
  * <!-- begin-user-doc -->
@@ -32,11 +34,14 @@ import org.eclipse.emf.ecore.util.EDataTypeUniqueEList;
  *   <li>{@link edu.cmu.emfta.impl.EventImpl#getRelatedObject <em>Related Object</em>}</li>
  *   <li>{@link edu.cmu.emfta.impl.EventImpl#getReferenceCount <em>Reference Count</em>}</li>
  *   <li>{@link edu.cmu.emfta.impl.EventImpl#getURI <em>URI</em>}</li>
+ *   <li>{@link edu.cmu.emfta.impl.EventImpl#getUuid <em>Uuid</em>}</li>
+ *   <li>{@link edu.cmu.emfta.impl.EventImpl#isSafeGuard <em>Safe Guard</em>}</li>
  * </ul>
  *
  * @generated
  */
 public class EventImpl extends MinimalEObjectImpl.Container implements Event {
+	
 	/**
 	 * The default value of the '{@link #getType() <em>Type</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -165,7 +170,7 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * @generated
 	 * @ordered
 	 */
-	protected static final String URI_EDEFAULT = null;
+	protected static final String URI_EDEFAULT = "";
 
 	/**
 	 * The cached value of the '{@link #getURI() <em>URI</em>}' attribute.
@@ -176,6 +181,46 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * @ordered
 	 */
 	protected String uri = URI_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #getUuid() <em>Uuid</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getUuid()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String UUID_EDEFAULT = null;
+
+	/**
+	 * The cached value of the '{@link #getUuid() <em>Uuid</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #getUuid()
+	 * @generated
+	 * @ordered
+	 */
+	protected String uuid = UUID_EDEFAULT;
+
+	/**
+	 * The default value of the '{@link #isSafeGuard() <em>Safe Guard</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isSafeGuard()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final boolean SAFE_GUARD_EDEFAULT = false;
+
+	/**
+	 * The cached value of the '{@link #isSafeGuard() <em>Safe Guard</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @see #isSafeGuard()
+	 * @generated
+	 * @ordered
+	 */
+	protected boolean safeGuard = SAFE_GUARD_EDEFAULT;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -201,6 +246,7 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EventType getType() {
 		return type;
 	}
@@ -210,11 +256,13 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setType(EventType newType) {
 		EventType oldType = type;
 		type = newType == null ? TYPE_EDEFAULT : newType;
-		if (eNotificationRequired())
+		if (eNotificationRequired()) {
 			eNotify(new ENotificationImpl(this, Notification.SET, EmftaPackage.EVENT__TYPE, oldType, type));
+		}
 	}
 
 	/**
@@ -222,6 +270,7 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -231,11 +280,13 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setName(String newName) {
 		String oldName = name;
 		name = newName;
-		if (eNotificationRequired())
+		if (eNotificationRequired()) {
 			eNotify(new ENotificationImpl(this, Notification.SET, EmftaPackage.EVENT__NAME, oldName, name));
+		}
 	}
 
 	/**
@@ -243,6 +294,7 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public double getProbability() {
 		return probability;
 	}
@@ -252,11 +304,13 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setProbability(double newProbability) {
 		double oldProbability = probability;
 		probability = newProbability;
-		if (eNotificationRequired())
+		if (eNotificationRequired()) {
 			eNotify(new ENotificationImpl(this, Notification.SET, EmftaPackage.EVENT__PROBABILITY, oldProbability, probability));
+		}
 	}
 
 	/**
@@ -264,6 +318,7 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getDescription() {
 		return description;
 	}
@@ -273,11 +328,13 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setDescription(String newDescription) {
 		String oldDescription = description;
 		description = newDescription;
-		if (eNotificationRequired())
+		if (eNotificationRequired()) {
 			eNotify(new ENotificationImpl(this, Notification.SET, EmftaPackage.EVENT__DESCRIPTION, oldDescription, description));
+		}
 	}
 
 	/**
@@ -285,6 +342,7 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public Gate getGate() {
 		return gate;
 	}
@@ -299,7 +357,11 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 		gate = newGate;
 		if (eNotificationRequired()) {
 			ENotificationImpl notification = new ENotificationImpl(this, Notification.SET, EmftaPackage.EVENT__GATE, oldGate, newGate);
-			if (msgs == null) msgs = notification; else msgs.add(notification);
+			if (msgs == null) {
+				msgs = notification;
+			} else {
+				msgs.add(notification);
+			}
 		}
 		return msgs;
 	}
@@ -309,18 +371,24 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setGate(Gate newGate) {
 		if (newGate != gate) {
 			NotificationChain msgs = null;
-			if (gate != null)
+			if (gate != null) {
 				msgs = ((InternalEObject)gate).eInverseRemove(this, EOPPOSITE_FEATURE_BASE - EmftaPackage.EVENT__GATE, null, msgs);
-			if (newGate != null)
+			}
+			if (newGate != null) {
 				msgs = ((InternalEObject)newGate).eInverseAdd(this, EOPPOSITE_FEATURE_BASE - EmftaPackage.EVENT__GATE, null, msgs);
+			}
 			msgs = basicSetGate(newGate, msgs);
-			if (msgs != null) msgs.dispatch();
+			if (msgs != null) {
+				msgs.dispatch();
+			}
 		}
-		else if (eNotificationRequired())
+		else if (eNotificationRequired()) {
 			eNotify(new ENotificationImpl(this, Notification.SET, EmftaPackage.EVENT__GATE, newGate, newGate));
+		}
 	}
 
 	/**
@@ -328,6 +396,7 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public EList<Object> getRelatedObject() {
 		if (relatedObject == null) {
 			relatedObject = new EDataTypeUniqueEList<Object>(Object.class, this, EmftaPackage.EVENT__RELATED_OBJECT);
@@ -340,6 +409,7 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public int getReferenceCount() {
 		return referenceCount;
 	}
@@ -349,11 +419,13 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setReferenceCount(int newReferenceCount) {
 		int oldReferenceCount = referenceCount;
 		referenceCount = newReferenceCount;
-		if (eNotificationRequired())
+		if (eNotificationRequired()) {
 			eNotify(new ENotificationImpl(this, Notification.SET, EmftaPackage.EVENT__REFERENCE_COUNT, oldReferenceCount, referenceCount));
+		}
 	}
 
 	/**
@@ -361,6 +433,7 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public String getURI() {
 		return uri;
 	}
@@ -370,11 +443,61 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	@Override
 	public void setURI(String newURI) {
 		String oldURI = uri;
 		uri = newURI;
-		if (eNotificationRequired())
+		if (eNotificationRequired()) {
 			eNotify(new ENotificationImpl(this, Notification.SET, EmftaPackage.EVENT__URI, oldURI, uri));
+		}
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public String getUuid() {
+		return uuid;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setUuid(String newUuid) {
+		String oldUuid = uuid;
+		uuid = newUuid;
+		if (eNotificationRequired()) {
+			eNotify(new ENotificationImpl(this, Notification.SET, EmftaPackage.EVENT__UUID, oldUuid, uuid));
+		}
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public boolean isSafeGuard() {
+		return safeGuard;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public void setSafeGuard(boolean newSafeGuard) {
+		boolean oldSafeGuard = safeGuard;
+		safeGuard = newSafeGuard;
+		if (eNotificationRequired()) {
+			eNotify(new ENotificationImpl(this, Notification.SET, EmftaPackage.EVENT__SAFE_GUARD, oldSafeGuard, safeGuard));
+		}
 	}
 
 	/**
@@ -415,6 +538,10 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 				return getReferenceCount();
 			case EmftaPackage.EVENT__URI:
 				return getURI();
+			case EmftaPackage.EVENT__UUID:
+				return getUuid();
+			case EmftaPackage.EVENT__SAFE_GUARD:
+				return isSafeGuard();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -453,6 +580,12 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 			case EmftaPackage.EVENT__URI:
 				setURI((String)newValue);
 				return;
+			case EmftaPackage.EVENT__UUID:
+				setUuid((String)newValue);
+				return;
+			case EmftaPackage.EVENT__SAFE_GUARD:
+				setSafeGuard((Boolean)newValue);
+				return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -489,6 +622,12 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 			case EmftaPackage.EVENT__URI:
 				setURI(URI_EDEFAULT);
 				return;
+			case EmftaPackage.EVENT__UUID:
+				setUuid(UUID_EDEFAULT);
+				return;
+			case EmftaPackage.EVENT__SAFE_GUARD:
+				setSafeGuard(SAFE_GUARD_EDEFAULT);
+				return;
 		}
 		super.eUnset(featureID);
 	}
@@ -517,6 +656,10 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 				return referenceCount != REFERENCE_COUNT_EDEFAULT;
 			case EmftaPackage.EVENT__URI:
 				return URI_EDEFAULT == null ? uri != null : !URI_EDEFAULT.equals(uri);
+			case EmftaPackage.EVENT__UUID:
+				return UUID_EDEFAULT == null ? uuid != null : !UUID_EDEFAULT.equals(uuid);
+			case EmftaPackage.EVENT__SAFE_GUARD:
+				return safeGuard != SAFE_GUARD_EDEFAULT;
 		}
 		return super.eIsSet(featureID);
 	}
@@ -528,7 +671,9 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 	 */
 	@Override
 	public String toString() {
-		if (eIsProxy()) return super.toString();
+		if (eIsProxy()) {
+			return super.toString();
+		}
 
 		StringBuffer result = new StringBuffer(super.toString());
 		result.append(" (type: ");
@@ -545,6 +690,10 @@ public class EventImpl extends MinimalEObjectImpl.Container implements Event {
 		result.append(referenceCount);
 		result.append(", URI: ");
 		result.append(uri);
+		result.append(", uuid: ");
+		result.append(uuid);
+		result.append(", safeGuard: ");
+		result.append(safeGuard);
 		result.append(')');
 		return result.toString();
 	}

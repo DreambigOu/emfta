@@ -140,13 +140,31 @@ public interface EmftaPackage extends EPackage {
 	int EVENT__URI = 7;
 
 	/**
+	 * The feature id for the '<em><b>Uuid</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EVENT__UUID = 8;
+
+	/**
+	 * The feature id for the '<em><b>Safe Guard</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int EVENT__SAFE_GUARD = 9;
+
+	/**
 	 * The number of structural features of the '<em>Event</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int EVENT_FEATURE_COUNT = 8;
+	int EVENT_FEATURE_COUNT = 10;
 
 	/**
 	 * The number of operations of the '<em>Event</em>' class.
@@ -414,6 +432,28 @@ public interface EmftaPackage extends EPackage {
 	EAttribute getEvent_URI();
 
 	/**
+	 * Returns the meta object for the attribute '{@link edu.cmu.emfta.Event#getUuid <em>Uuid</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Uuid</em>'.
+	 * @see edu.cmu.emfta.Event#getUuid()
+	 * @see #getEvent()
+	 * @generated
+	 */
+	EAttribute getEvent_Uuid();
+
+	/**
+	 * Returns the meta object for the attribute '{@link edu.cmu.emfta.Event#isSafeGuard <em>Safe Guard</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the attribute '<em>Safe Guard</em>'.
+	 * @see edu.cmu.emfta.Event#isSafeGuard()
+	 * @see #getEvent()
+	 * @generated
+	 */
+	EAttribute getEvent_SafeGuard();
+
+	/**
 	 * Returns the meta object for class '{@link edu.cmu.emfta.Gate <em>Gate</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -648,6 +688,22 @@ public interface EmftaPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute EVENT__URI = eINSTANCE.getEvent_URI();
+
+		/**
+		 * The meta object literal for the '<em><b>Uuid</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EVENT__UUID = eINSTANCE.getEvent_Uuid();
+
+		/**
+		 * The meta object literal for the '<em><b>Safe Guard</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EAttribute EVENT__SAFE_GUARD = eINSTANCE.getEvent_SafeGuard();
 
 		/**
 		 * The meta object literal for the '{@link edu.cmu.emfta.impl.GateImpl <em>Gate</em>}' class.

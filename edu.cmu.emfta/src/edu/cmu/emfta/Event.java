@@ -22,6 +22,8 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link edu.cmu.emfta.Event#getRelatedObject <em>Related Object</em>}</li>
  *   <li>{@link edu.cmu.emfta.Event#getReferenceCount <em>Reference Count</em>}</li>
  *   <li>{@link edu.cmu.emfta.Event#getURI <em>URI</em>}</li>
+ *   <li>{@link edu.cmu.emfta.Event#getUuid <em>Uuid</em>}</li>
+ *   <li>{@link edu.cmu.emfta.Event#isSafeGuard <em>Safe Guard</em>}</li>
  * </ul>
  *
  * @see edu.cmu.emfta.EmftaPackage#getEvent()
@@ -208,6 +210,7 @@ public interface Event extends EObject {
 
 	/**
 	 * Returns the value of the '<em><b>URI</b></em>' attribute.
+	 * The default value is <code>""</code>.
 	 * <!-- begin-user-doc -->
 	 * <p>
 	 * If the meaning of the '<em>URI</em>' attribute isn't clear,
@@ -217,7 +220,7 @@ public interface Event extends EObject {
 	 * @return the value of the '<em>URI</em>' attribute.
 	 * @see #setURI(String)
 	 * @see edu.cmu.emfta.EmftaPackage#getEvent_URI()
-	 * @model id="true"
+	 * @model default="" id="true"
 	 * @generated
 	 */
 	String getURI();
@@ -231,5 +234,57 @@ public interface Event extends EObject {
 	 * @generated
 	 */
 	void setURI(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Uuid</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Uuid</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Uuid</em>' attribute.
+	 * @see #setUuid(String)
+	 * @see edu.cmu.emfta.EmftaPackage#getEvent_Uuid()
+	 * @model
+	 * @generated
+	 */
+	String getUuid();
+
+	/**
+	 * Sets the value of the '{@link edu.cmu.emfta.Event#getUuid <em>Uuid</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Uuid</em>' attribute.
+	 * @see #getUuid()
+	 * @generated
+	 */
+	void setUuid(String value);
+
+	/**
+	 * Returns the value of the '<em><b>Safe Guard</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Safe Guard</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Safe Guard</em>' attribute.
+	 * @see #setSafeGuard(boolean)
+	 * @see edu.cmu.emfta.EmftaPackage#getEvent_SafeGuard()
+	 * @model
+	 * @generated
+	 */
+	boolean isSafeGuard();
+
+	/**
+	 * Sets the value of the '{@link edu.cmu.emfta.Event#isSafeGuard <em>Safe Guard</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Safe Guard</em>' attribute.
+	 * @see #isSafeGuard()
+	 * @generated
+	 */
+	void setSafeGuard(boolean value);
 
 } // Event
