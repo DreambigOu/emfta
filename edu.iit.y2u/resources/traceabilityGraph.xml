@@ -1,0 +1,6 @@
+<TraceabilityGraph>
+	<RootEventToRequirementTraceLinks>
+	</RootEventToRequirementTraceLinks>
+	<BasicEventToStatechartTraceLinks>
+	</BasicEventToStatechartTraceLinks>
+</TraceabilityGraph>
