@@ -138,5 +138,12 @@
             id="edu.cmu.emfta.actions.SetEventToRequirementTraceabilityAction">
       </javaActions>
    </extension>
+   <extension
+         point="org.eclipse.sirius.externalJavaAction">
+      <javaActions
+            actionClass="edu.cmu.emfta.actions.BrowseTraceabilityAction"
+            id="edu.cmu.emfta.actions.BrowseTraceabilityAction">
+      </javaActions>
+   </extension>
    
 </plugin>

@@ -27,6 +27,35 @@ public class TraceabilityGraph {
 		return instance;
 	}
 
+	/**
+	 * @return the mapRootEventToRequirement
+	 */
+	public static Map<String, RootEventToRequirementTraceLink> getMapRootEventToRequirement() {
+		return mapRootEventToRequirement;
+	}
+
+	/**
+	 * @param mapRootEventToRequirement the mapRootEventToRequirement to set
+	 */
+	public static void setMapRootEventToRequirement(
+			Map<String, RootEventToRequirementTraceLink> mapRootEventToRequirement) {
+		TraceabilityGraph.mapRootEventToRequirement = mapRootEventToRequirement;
+	}
+
+	/**
+	 * @return the mapBasicEventToAutomata
+	 */
+	public static Map<String, BasicEventToAutomataTraceLink> getMapBasicEventToAutomata() {
+		return mapBasicEventToAutomata;
+	}
+
+	/**
+	 * @param mapBasicEventToAutomata the mapBasicEventToAutomata to set
+	 */
+	public static void setMapBasicEventToAutomata(Map<String, BasicEventToAutomataTraceLink> mapBasicEventToAutomata) {
+		TraceabilityGraph.mapBasicEventToAutomata = mapBasicEventToAutomata;
+	}
+
 	public TraceabilityGraphReader getTraceabilityGraphReader(String traceFilPath) {
 
 		return new TraceabilityGraphReader(traceFilPath);

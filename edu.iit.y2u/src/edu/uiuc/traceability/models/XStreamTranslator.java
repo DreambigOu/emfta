@@ -15,7 +15,7 @@ public final class XStreamTranslator {
 
 	private XStreamTranslator() {
 		xstream = new XStream();
-		XStream a = new XStream();
+//		xstream = new XStream(new StaxDriver());
 		xstream.ignoreUnknownElements();
 	}
 

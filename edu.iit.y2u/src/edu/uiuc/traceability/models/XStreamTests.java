@@ -1,5 +1,10 @@
 package edu.uiuc.traceability.models;
 
+import java.beans.XMLEncoder;
+import java.io.BufferedOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+
 import edu.uiuc.traceability.artifacts.AutomataArtifact;
 
 public class XStreamTests {
@@ -21,6 +26,25 @@ public class XStreamTests {
 
 		String xml = xStreamTranslator.toXMLString(regionArtifact);
 		System.out.println(xml);
+
+		TraceabilityGraph tg = TraceabilityGraph.getInstance();
+
+		tg.addBasicEventToAutomataTraceLink(new BasicEventToAutomataTraceLink());
+		tg.addRootEventToRequirementTraceLink(new RootEventToRequirementTraceLink());
+
+		System.out.println(xStreamTranslator.toXMLString(tg));
+		System.out.println(xStreamTranslator.toXMLString(TraceabilityGraph.getMapBasicEventToAutomata()));
+		System.out.println(xStreamTranslator.toXMLString(TraceabilityGraph.getMapRootEventToRequirement()));
+
+		XMLEncoder encoder=null;
+		try{
+			encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream("tg.tgx")));
+		}catch(FileNotFoundException fileNotFound){
+			System.out.println("ERROR: While Creating or Opening the File dvd.xml");
+		}
+		encoder.writeObject(TraceabilityGraph.getMapBasicEventToAutomata());
+		encoder.close();
+
 	}
 
 }

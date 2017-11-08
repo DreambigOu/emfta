@@ -6,7 +6,9 @@ import org.eclipse.jface.wizard.Wizard;
 import edu.cmu.emfta.Event;
 import edu.uiuc.traceability.artifacts.EventArtifact;
 import edu.uiuc.traceability.artifacts.EventType;
+import edu.uiuc.traceability.defaults.Traceability;
 import edu.uiuc.traceability.models.TraceabilityGraph;
+import edu.uiuc.traceability.models.TraceabilityGraphReader;
 
 public class SetEventToDesignTraceabilityWizard extends Wizard {
 	protected SetEventToDesignTraceabilityPageOne one;
@@ -36,6 +38,9 @@ public class SetEventToDesignTraceabilityWizard extends Wizard {
 
 		TraceabilityGraph tg = TraceabilityGraph.getInstance();
 
+		TraceabilityGraphReader tgReader = tg.getTraceabilityGraphReader(Traceability.DEFAULT_TRACEABILITY_GRAPH_PATH);
+		tgReader.getTraceabilityGraph();
+
 		if (one.isPageComplete()) {
 
 			EventArtifact eventArtifact = new EventArtifact();
@@ -52,6 +57,8 @@ public class SetEventToDesignTraceabilityWizard extends Wizard {
 			System.out.println("uuid: " + uuid);
 			System.out.println(tg.getBasicEventToAutomataTraceLink(uuid).toString());
 		}
+
+		tgReader.write();
 
 		return one.isPageComplete();
 	}
