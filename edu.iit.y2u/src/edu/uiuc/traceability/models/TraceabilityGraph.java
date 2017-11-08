@@ -7,6 +7,7 @@ import java.util.UUID;
 import edu.uiuc.traceability.artifacts.AutomataArtifact;
 import edu.uiuc.traceability.artifacts.EventArtifact;
 import edu.uiuc.traceability.artifacts.RequirementArtifact;
+import edu.uiuc.traceability.io.TraceabilityGraphIO;
 
 // Use singleton design pattern
 /** Exposes the public interface of the assignment. This uses the <i>Singleton</i> design pattern.
@@ -56,9 +57,9 @@ public class TraceabilityGraph {
 		TraceabilityGraph.mapBasicEventToAutomata = mapBasicEventToAutomata;
 	}
 
-	public TraceabilityGraphReader getTraceabilityGraphReader(String traceFilPath) {
+	public TraceabilityGraphIO getTraceabilityGraphReader(String traceFilPath) {
 
-		return new TraceabilityGraphReader(traceFilPath);
+		return new TraceabilityGraphIO(traceFilPath);
 	}
 
 	public String addRootEventToRequirementTraceLink(RootEventToRequirementTraceLink traceLink) {

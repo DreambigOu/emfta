@@ -6,9 +6,9 @@ import org.eclipse.jface.wizard.Wizard;
 import edu.cmu.emfta.Event;
 import edu.uiuc.traceability.artifacts.EventArtifact;
 import edu.uiuc.traceability.artifacts.EventType;
-import edu.uiuc.traceability.defaults.Traceability;
+import edu.uiuc.traceability.defaults.TraceabilityConfigs;
+import edu.uiuc.traceability.io.TraceabilityGraphIO;
 import edu.uiuc.traceability.models.TraceabilityGraph;
-import edu.uiuc.traceability.models.TraceabilityGraphReader;
 
 public class SetEventToDesignTraceabilityWizard extends Wizard {
 	protected SetEventToDesignTraceabilityPageOne one;
@@ -38,8 +38,11 @@ public class SetEventToDesignTraceabilityWizard extends Wizard {
 
 		TraceabilityGraph tg = TraceabilityGraph.getInstance();
 
-		TraceabilityGraphReader tgReader = tg.getTraceabilityGraphReader(Traceability.DEFAULT_TRACEABILITY_GRAPH_PATH);
-		tgReader.getTraceabilityGraph();
+		TraceabilityGraphIO tgReader = tg.getTraceabilityGraphReader(TraceabilityConfigs.DEFAULT_TRACEABILITY_GRAPH_PATH);
+//		if(tgReader.isRead() == false) {
+//
+//		}
+		tgReader.read();
 
 		if (one.isPageComplete()) {
 

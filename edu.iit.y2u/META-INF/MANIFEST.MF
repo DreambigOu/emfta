@@ -9,6 +9,7 @@ Export-Package: Y2U,
  Y2U.Transformer,
  edu.uiuc.traceability.artifacts,
  edu.uiuc.traceability.defaults,
+ edu.uiuc.traceability.io,
  edu.uiuc.traceability.models,
  edu.uiuc.traceability.reqif.parser,
  edu.uiuc.traceability.statecharts

@@ -6,10 +6,9 @@ import org.eclipse.jface.wizard.Wizard;
 import edu.cmu.emfta.Event;
 import edu.uiuc.traceability.artifacts.EventArtifact;
 import edu.uiuc.traceability.artifacts.EventType;
-import edu.uiuc.traceability.defaults.Traceability;
-import edu.uiuc.traceability.models.RootEventToRequirementTraceLink;
+import edu.uiuc.traceability.defaults.TraceabilityConfigs;
+import edu.uiuc.traceability.io.TraceabilityGraphIO;
 import edu.uiuc.traceability.models.TraceabilityGraph;
-import edu.uiuc.traceability.models.TraceabilityGraphReader;
 
 public class SetEventToRequirementTraceabilityWizard extends Wizard {
 	protected SetEventToRequirementTraceabilityPageOne one;
@@ -46,12 +45,11 @@ public class SetEventToRequirementTraceabilityWizard extends Wizard {
 
 		TraceabilityGraph tg = TraceabilityGraph.getInstance();
 
-		TraceabilityGraphReader tgReader = tg.getTraceabilityGraphReader(Traceability.DEFAULT_TRACEABILITY_GRAPH_PATH);
-		tgReader.getTraceabilityGraph();
+		TraceabilityGraphIO tgReader = tg.getTraceabilityGraphReader(TraceabilityConfigs.DEFAULT_TRACEABILITY_GRAPH_PATH);
+//		tgReader.getTraceabilityGraph();
+		tgReader.read();
 
 		if (one.isPageComplete()) {
-
-			RootEventToRequirementTraceLink traceLink = new RootEventToRequirementTraceLink();
 
 			EventArtifact eventArtifact = new EventArtifact();
 			eventArtifact.setName(this.selectedRootEvent.getName());

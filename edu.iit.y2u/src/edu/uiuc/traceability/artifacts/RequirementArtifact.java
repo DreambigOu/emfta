@@ -19,6 +19,10 @@ public class RequirementArtifact {
 		this.reqType = reqType;
 	}
 
+	public RequirementArtifact() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public String getOriginIdentifier() {
 		return originIdentifier;
 	}

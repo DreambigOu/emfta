@@ -107,7 +107,8 @@ public class ReqifParser {
 
 							System.out.println("[getIdentifierAndRequirementList().reqDescription]" + reqDescription);
 
-							Entry<String, String> entry = new SimpleEntry(specObjectIdentifier, reqDescription);
+							Entry<String, String> entry = new SimpleEntry<String, String>(specObjectIdentifier,
+									reqDescription);
 							System.out.println("[getIdentifierAndRequirementList().entry]" + entry.toString());
 
 							result.add(entry);

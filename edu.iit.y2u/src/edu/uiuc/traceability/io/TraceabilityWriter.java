@@ -1,4 +1,4 @@
-package edu.uiuc;
+package edu.uiuc.traceability.io;
 
 import java.io.File;
 import java.util.Map.Entry;
@@ -22,7 +22,6 @@ import edu.uiuc.traceability.models.RootEventToRequirementTraceLink;
 import edu.uiuc.traceability.models.TraceabilityGraph;
 
 public class TraceabilityWriter {
-	private TraceabilityGraph tg;
 
 	public static void toXmlFile(TraceabilityGraph tg, String path) throws ParserConfigurationException, Exception {
 
@@ -46,7 +45,7 @@ public class TraceabilityWriter {
 
 				Attr attrTraceId = doc.createAttribute("TraceId");
 				attrTraceId.setValue(trace.getKey());
-				rootEventToRequiremenTraceLinksElement.setAttributeNode(attrTraceId);
+				TraceElement.setAttributeNode(attrTraceId);
 
 				Element RootEventElement = doc.createElement("RootEvent");
 				TraceElement.appendChild(RootEventElement);
@@ -66,7 +65,7 @@ public class TraceabilityWriter {
 
 
 
-		Element basicEventToStataechartTraceLinkElement = doc.createElement("BasicEventToStataechartTraceLinks");
+		Element basicEventToStataechartTraceLinkElement = doc.createElement("BasicEventToAutomatatTraceLinks");
 		rootElement.appendChild(basicEventToStataechartTraceLinkElement);
 
 		for (Entry<String, BasicEventToAutomataTraceLink> trace : TraceabilityGraph.getMapBasicEventToAutomata()
@@ -78,7 +77,7 @@ public class TraceabilityWriter {
 
 				Attr attrTraceId = doc.createAttribute("TraceId");
 				attrTraceId.setValue(trace.getKey());
-				basicEventToStataechartTraceLinkElement.setAttributeNode(attrTraceId);
+				TraceElement.setAttributeNode(attrTraceId);
 
 				Element BasicEventElement = doc.createElement("BasicEvent");
 				TraceElement.appendChild(BasicEventElement);
