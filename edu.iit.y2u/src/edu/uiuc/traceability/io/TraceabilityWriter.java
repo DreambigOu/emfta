@@ -17,6 +17,8 @@ import org.w3c.dom.Element;
 
 import edu.uiuc.traceability.artifacts.AutomataArtifact;
 import edu.uiuc.traceability.artifacts.EventArtifact;
+import edu.uiuc.traceability.artifacts.RequirementArtifact;
+import edu.uiuc.traceability.defaults.TraceabilityGraphFields;
 import edu.uiuc.traceability.models.BasicEventToAutomataTraceLink;
 import edu.uiuc.traceability.models.RootEventToRequirementTraceLink;
 import edu.uiuc.traceability.models.TraceabilityGraph;
@@ -33,66 +35,77 @@ public class TraceabilityWriter {
 		Element rootElement = doc.createElement("TraceabilityGraph");
 		doc.appendChild(rootElement);
 
-		Element rootEventToRequiremenTraceLinksElement = doc.createElement("RootEventToRequiremenTraceLinks");
-		rootElement.appendChild(rootEventToRequiremenTraceLinksElement);
+		if (TraceabilityGraph.getMapRootEventToRequirement() != null
+				&& TraceabilityGraph.getMapRootEventToRequirement().size() > 0) {
 
-		for (Entry<String, RootEventToRequirementTraceLink> trace : TraceabilityGraph.getMapRootEventToRequirement()
-				.entrySet()) {
+			Element rootEventToRequiremenTraceLinksElement = doc
+					.createElement(TraceabilityGraphFields.RootEventToRequirementTraceLinks.name());
+			rootElement.appendChild(rootEventToRequiremenTraceLinksElement);
 
-			if (trace != null) {
-				Element TraceElement = doc.createElement("Trace");
-				rootEventToRequiremenTraceLinksElement.appendChild(TraceElement);
+			for (Entry<String, RootEventToRequirementTraceLink> trace : TraceabilityGraph.getMapRootEventToRequirement()
+					.entrySet()) {
 
-				Attr attrTraceId = doc.createAttribute("TraceId");
-				attrTraceId.setValue(trace.getKey());
-				TraceElement.setAttributeNode(attrTraceId);
+				if (trace != null) {
+					Element TraceElement = doc.createElement("Trace");
+					rootEventToRequiremenTraceLinksElement.appendChild(TraceElement);
 
-				Element RootEventElement = doc.createElement("RootEvent");
-				TraceElement.appendChild(RootEventElement);
+					Attr attrTraceId = doc.createAttribute("TraceId");
+					attrTraceId.setValue(trace.getKey());
+					TraceElement.setAttributeNode(attrTraceId);
 
-				eventToXML(doc, RootEventElement, trace.getValue().getSrc());
+					Element RootEventElement = doc.createElement("RootEvent");
+					TraceElement.appendChild(RootEventElement);
 
-				Element ReqElement = doc.createElement("Requirement");
-				TraceElement.appendChild(ReqElement);
+					eventToXML(doc, RootEventElement, trace.getValue().getSrc());
 
-				requirementToXML(doc, ReqElement, trace);
+					Element ReqElement = doc.createElement("Requirement");
+					TraceElement.appendChild(ReqElement);
 
-				rootEventToRequiremenTraceLinksElement.appendChild(TraceElement);
+					requirementToXML(doc, ReqElement, trace.getValue().getDst());
 
+					rootEventToRequiremenTraceLinksElement.appendChild(TraceElement);
+				}
 			}
-
 		}
 
+		if (TraceabilityGraph.getMapBasicEventToAutomata() != null
+				&& TraceabilityGraph.getMapBasicEventToAutomata().size() > 0) {
 
+			System.out.println("TraceabilityGraph.getMapBasicEventToAutomata(): "
+					+ TraceabilityGraph.getMapBasicEventToAutomata().toString());
+			System.out.println("TraceabilityGraph.getMapBasicEventToAutomata() size: "
+					+ TraceabilityGraph.getMapBasicEventToAutomata().size());
 
-		Element basicEventToStataechartTraceLinkElement = doc.createElement("BasicEventToAutomatatTraceLinks");
-		rootElement.appendChild(basicEventToStataechartTraceLinkElement);
+			Element basicEventToStataechartTraceLinkElement = doc
+					.createElement(TraceabilityGraphFields.BasicEventToAutomataTraceLinks.name());
+			rootElement.appendChild(basicEventToStataechartTraceLinkElement);
 
-		for (Entry<String, BasicEventToAutomataTraceLink> trace : TraceabilityGraph.getMapBasicEventToAutomata()
-				.entrySet()) {
+			for (Entry<String, BasicEventToAutomataTraceLink> trace : TraceabilityGraph.getMapBasicEventToAutomata()
+					.entrySet()) {
 
-			if (trace != null) {
-				Element TraceElement = doc.createElement("Trace");
-				basicEventToStataechartTraceLinkElement.appendChild(TraceElement);
+				if (trace != null) {
+					Element TraceElement = doc.createElement("Trace");
+					basicEventToStataechartTraceLinkElement.appendChild(TraceElement);
 
-				Attr attrTraceId = doc.createAttribute("TraceId");
-				attrTraceId.setValue(trace.getKey());
-				TraceElement.setAttributeNode(attrTraceId);
+					Attr attrTraceId = doc.createAttribute("TraceId");
+					attrTraceId.setValue(trace.getKey());
+					TraceElement.setAttributeNode(attrTraceId);
 
-				Element BasicEventElement = doc.createElement("BasicEvent");
-				TraceElement.appendChild(BasicEventElement);
+					Element BasicEventElement = doc.createElement("BasicEvent");
+					TraceElement.appendChild(BasicEventElement);
 
-				eventToXML(doc, BasicEventElement, trace.getValue().getSrc());
+					eventToXML(doc, BasicEventElement, trace.getValue().getSrc());
 
-				Element AutomataElement = doc.createElement("Automata");
-				TraceElement.appendChild(AutomataElement);
+					Element AutomataElement = doc.createElement("Automata");
+					TraceElement.appendChild(AutomataElement);
 
-				automataToXML(doc, AutomataElement, trace.getValue().getDst());
+					automataToXML(doc, AutomataElement, trace.getValue().getDst());
 
-				basicEventToStataechartTraceLinkElement.appendChild(TraceElement);
+					basicEventToStataechartTraceLinkElement.appendChild(TraceElement);
+				}
 			}
-
 		}
+
 
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
@@ -152,26 +165,26 @@ public class TraceabilityWriter {
 	}
 
 	public static void requirementToXML(Document doc, Element element,
-			Entry<String, RootEventToRequirementTraceLink> trace) {
+			RequirementArtifact requirementArtifact) {
 
 		Attr attrOriginIdentifier = doc.createAttribute("OriginIdentifier");
-		attrOriginIdentifier.setValue(trace.getValue().getDst().getOriginIdentifier());
+		attrOriginIdentifier.setValue(requirementArtifact.getOriginIdentifier());
 		element.setAttributeNode(attrOriginIdentifier);
 
 		Attr attrOriginDescription = doc.createAttribute("OriginDescription");
-		attrOriginDescription.setValue(trace.getValue().getDst().getOriginDescription());
+		attrOriginDescription.setValue(requirementArtifact.getOriginDescription());
 		element.setAttributeNode(attrOriginDescription);
 
 		Attr attrFilePathReq = doc.createAttribute("FilePath");
-		attrFilePathReq.setValue(trace.getValue().getDst().getFilePath());
+		attrFilePathReq.setValue(requirementArtifact.getFilePath());
 		element.setAttributeNode(attrFilePathReq);
 
 		Attr attrOriginLastChange = doc.createAttribute("OriginLastChange");
-		attrOriginLastChange.setValue(trace.getValue().getDst().getOriginLastChange());
+		attrOriginLastChange.setValue(requirementArtifact.getOriginLastChange());
 		element.setAttributeNode(attrOriginLastChange);
 
 		Attr attrReqType = doc.createAttribute("ReqType");
-		attrReqType.setValue(trace.getValue().getDst().getReqType().name());
+		attrReqType.setValue(requirementArtifact.getReqType().name());
 		element.setAttributeNode(attrReqType);
 	}
 

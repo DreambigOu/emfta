@@ -1,6 +1,7 @@
 package edu.cmu.emfta.wizards;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.jface.wizard.WizardPage;
@@ -22,6 +23,14 @@ import org.eclipse.swt.widgets.Text;
 
 import edu.cmu.emfta.Event;
 import edu.uiuc.traceability.artifacts.AutomataArtifact;
+import edu.uiuc.traceability.defaults.AutomataFields;
+import edu.uiuc.traceability.defaults.EventFields;
+import edu.uiuc.traceability.defaults.RequirementFields;
+import edu.uiuc.traceability.defaults.TraceabilityConfigs;
+import edu.uiuc.traceability.io.TraceabilityGraphIO;
+import edu.uiuc.traceability.models.BasicEventToAutomataTraceLink;
+import edu.uiuc.traceability.models.RootEventToRequirementTraceLink;
+import edu.uiuc.traceability.models.TraceabilityGraph;
 import edu.uiuc.traceability.statecharts.StatechartReader;
 
 public class BrowseTraceabilityPageOne extends WizardPage {
@@ -40,15 +49,26 @@ public class BrowseTraceabilityPageOne extends WizardPage {
 
 	private String fileContent;
 	private Table tableRootEventToRequirement;
-	private Table tableBasicEventToStatechart;
+	private Table tableBasicEventToAutomata;
 	private int rowCount = 5, columnCount = 4;
-//	private ParseHelper<ReqSpec> reqspecParser;
+	private int columnsRootEventToRequirement = edu.uiuc.traceability.defaults.EventFields.values().length
+			+ edu.uiuc.traceability.defaults.RequirementFields.values().length;
+
+	private int columnsBasicEventToAutomata = edu.uiuc.traceability.defaults.EventFields.values().length
+			+ edu.uiuc.traceability.defaults.AutomataFields.values().length;
+
 	private StatechartReader sr;
 
 	private AutomataArtifact selectedAutomataArtifact;
+
 	private List<Entry<String, AutomataArtifact>> automataArtifactList;
 
+	private static Map<String, RootEventToRequirementTraceLink> mapRootEventToRequirement = null;
+	private static Map<String, BasicEventToAutomataTraceLink> mapBasicEventToAutomata = null;
+
 	private int LAYOUT_NUM_COLUMNS = 5;
+
+	private TraceabilityGraph tg;
 
 	protected BrowseTraceabilityPageOne() {
 		super("Page One");
@@ -71,7 +91,7 @@ public class BrowseTraceabilityPageOne extends WizardPage {
 		selectFileLable.setLayoutData(gridDataSelectFileLable);
 
 		Text traceabiltyGraphPathText = new Text(composite, SWT.BORDER | SWT.SINGLE);
-		traceabiltyGraphPathText.setText("path name");
+		traceabiltyGraphPathText.setText(TraceabilityConfigs.DEFAULT_TRACEABILITY_GRAPH_PATH);
 		GridData gridDataSelectedRootEvent = new GridData(GridData.FILL, GridData.CENTER, true, false);
 		gridDataSelectedRootEvent.horizontalSpan = 2;
 		traceabiltyGraphPathText.setLayoutData(gridDataSelectedRootEvent);
@@ -98,9 +118,17 @@ public class BrowseTraceabilityPageOne extends WizardPage {
 		refereshButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-////				Shell shell = parent.getShell();
-////				openDialogs(shell);
-////				readAllAadlFiles();
+
+				tg = TraceabilityGraph.getInstance();
+				TraceabilityGraphIO tgIO = tg.getTraceabilityGraphReader(traceabiltyGraphPathText.getText());
+				tgIO.read();
+
+				mapRootEventToRequirement = TraceabilityGraph.getMapRootEventToRequirement();
+				mapBasicEventToAutomata = TraceabilityGraph.getMapBasicEventToAutomata();
+
+				renderTableBasicEventToAutomata();
+				renderTableRootEventToRequirement();
+
 			}
 		});
 
@@ -116,7 +144,30 @@ public class BrowseTraceabilityPageOne extends WizardPage {
 		gridDataSeparatorUp.horizontalSpan = LAYOUT_NUM_COLUMNS;
 		separatorUp.setLayoutData(gridDataSeparatorUp);
 
-		//
+		// generate table
+		generateRootEventToRequirementTable();
+
+		// Create a horizontal separator
+		Label separatorMid = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
+		GridData gridDataSeparatorMid = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING,
+				GridData.VERTICAL_ALIGN_CENTER, true, false);
+		gridDataSeparatorMid.horizontalSpan = LAYOUT_NUM_COLUMNS;
+		separatorMid.setLayoutData(gridDataSeparatorMid);
+
+		generateBasicEventToAutomataTable();
+
+		parent.pack();
+
+		// required to avoid an error in the system
+		setControl(composite);
+//		setPageComplete(true);
+	}
+
+	/**
+	 *
+	 */
+	private void generateRootEventToRequirementTable() {
+		// Table
 		Label rootEventToRequirementLable = new Label(composite, SWT.LEFT);
 		rootEventToRequirementLable.setText("Root Event To Requirement Traceability:");
 		GridData gridDataRootEventToRequirementLable = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING,
@@ -136,30 +187,52 @@ public class BrowseTraceabilityPageOne extends WizardPage {
 		tableRootEventToRequirement.setLinesVisible(true);
 
 		// Print column title
-		for (int i = 0; i < columnCount; i++) {
+		for (int i = 0; i < EventFields.values().length; i++) {
 			TableColumn column = new TableColumn(tableRootEventToRequirement, SWT.NONE);
 
-			switch (i) {
+			if (i == EventFields.EventId.ordinal()) {
+				column.setText(EventFields.EventId.name());
 
-			case 0:
-				column.setText("Number");
-				break;
+			} else if (i == EventFields.Name.ordinal()) {
+				column.setText(EventFields.Name.name());
 
-			case 1:
-				column.setText("Automata Name");
-				break;
+			} else if (i == EventFields.EventType.ordinal()) {
+				column.setText(EventFields.EventType.name());
 
-			case 2:
-				column.setText("ID");
-				break;
+			} else if (i == EventFields.EventUri.ordinal()) {
+				column.setText(EventFields.EventUri.name());
 
-			case 3:
-				column.setText("Others");
-				break;
+			} else if (i == EventFields.FilePath.ordinal()) {
+				column.setText(EventFields.FilePath.name());
+
+			} else if (i == EventFields.SafeGuard.ordinal()) {
+				column.setText(EventFields.SafeGuard.name());
 			}
 		}
 
-		for (int i = 0; i < columnCount; i++) {
+//		Print column title
+		for (int i = 0; i < RequirementFields.values().length; i++) {
+			TableColumn column = new TableColumn(tableRootEventToRequirement, SWT.NONE);
+
+			if (i == RequirementFields.OriginDescription.ordinal()) {
+				column.setText(RequirementFields.OriginDescription.name());
+
+			} else if (i == RequirementFields.OriginIdentifier.ordinal()) {
+				column.setText(RequirementFields.OriginIdentifier.name());
+
+			} else if (i == RequirementFields.ReqType.ordinal()) {
+				column.setText(RequirementFields.ReqType.name());
+
+			} else if (i == RequirementFields.OriginLastChange.ordinal()) {
+				column.setText(RequirementFields.OriginLastChange.name());
+
+			} else if (i == RequirementFields.FilePath.ordinal()) {
+				column.setText(RequirementFields.FilePath.name());
+
+			}
+		}
+
+		for (int i = 0; i < columnsRootEventToRequirement; i++) {
 			tableRootEventToRequirement.getColumn(i).pack();
 		}
 
@@ -239,14 +312,12 @@ public class BrowseTraceabilityPageOne extends WizardPage {
 				GridData.VERTICAL_ALIGN_CENTER, false, false);
 		gridDataRemoveButton.horizontalSpan = 1;
 		removeButton.setLayoutData(gridDataRemoveButton);
+	}
 
-		// Create a horizontal separator
-		Label separatorMid = new Label(composite, SWT.SEPARATOR | SWT.HORIZONTAL);
-		GridData gridDataSeparatorMid = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING,
-				GridData.VERTICAL_ALIGN_CENTER, true, false);
-		gridDataSeparatorMid.horizontalSpan = LAYOUT_NUM_COLUMNS;
-		separatorMid.setLayoutData(gridDataSeparatorMid);
-
+	/**
+	 *
+	 */
+	private void generateBasicEventToAutomataTable() {
 		//
 		Label basicEventToStatechartTable = new Label(composite, SWT.LEFT);
 		basicEventToStatechartTable.setText("Basic Event To Statechart Traceability:");
@@ -257,61 +328,79 @@ public class BrowseTraceabilityPageOne extends WizardPage {
 
 		// Add BasicEventToStatechartTable
 		// Add tableBasicEventToStatechart
-		tableBasicEventToStatechart = new Table(composite, SWT.BORDER | SWT.V_SCROLL | SWT.FULL_SELECTION);
+		tableBasicEventToAutomata = new Table(composite, SWT.BORDER | SWT.V_SCROLL | SWT.FULL_SELECTION);
 		GridData gridDataBasicEventToStatechart = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING,
 				GridData.VERTICAL_ALIGN_CENTER, false, false);
 		gridDataBasicEventToStatechart.horizontalSpan = 4;
 		gridDataBasicEventToStatechart.verticalSpan = 3;
 		gridDataBasicEventToStatechart.grabExcessHorizontalSpace = true;
-		tableBasicEventToStatechart.setLayoutData(gridDataBasicEventToStatechart);
-		tableBasicEventToStatechart.setHeaderVisible(true);
-		tableBasicEventToStatechart.setLinesVisible(true);
+		tableBasicEventToAutomata.setLayoutData(gridDataBasicEventToStatechart);
+		tableBasicEventToAutomata.setHeaderVisible(true);
+		tableBasicEventToAutomata.setLinesVisible(true);
 
 		// Print column title
-		for (int i = 0; i < columnCount; i++) {
-			TableColumn column = new TableColumn(tableBasicEventToStatechart, SWT.NONE);
+		for (int i = 0; i < EventFields.values().length; i++) {
+			TableColumn column = new TableColumn(tableBasicEventToAutomata, SWT.NONE);
 
-			switch (i) {
+			if (i == EventFields.EventId.ordinal()) {
+				column.setText(EventFields.EventId.name());
 
-			case 0:
-				column.setText("Number");
-				break;
+			} else if (i == EventFields.Name.ordinal()) {
+				column.setText(EventFields.Name.name());
 
-			case 1:
-				column.setText("Automata Name");
-				break;
+			} else if (i == EventFields.EventType.ordinal()) {
+				column.setText(EventFields.EventType.name());
 
-			case 2:
-				column.setText("ID");
-				break;
+			} else if (i == EventFields.EventUri.ordinal()) {
+				column.setText(EventFields.EventUri.name());
 
-			case 3:
-				column.setText("Others");
-				break;
+			} else if (i == EventFields.FilePath.ordinal()) {
+				column.setText(EventFields.FilePath.name());
+
+			} else if (i == EventFields.SafeGuard.ordinal()) {
+				column.setText(EventFields.SafeGuard.name());
 			}
 		}
 
-		for (int i = 0; i < columnCount; i++) {
-			tableBasicEventToStatechart.getColumn(i).pack();
+		for (int i = 0; i < AutomataFields.values().length; i++) {
+			TableColumn column = new TableColumn(tableBasicEventToAutomata, SWT.NONE);
+
+			if (i == AutomataFields.OriginName.ordinal()) {
+				column.setText(AutomataFields.OriginName.name());
+
+			} else if (i == AutomataFields.OriginIdentifier.ordinal()) {
+				column.setText(AutomataFields.OriginIdentifier.name());
+
+			} else if (i == AutomataFields.OriginLastChange.ordinal()) {
+				column.setText(AutomataFields.OriginLastChange.name());
+
+			} else if (i == AutomataFields.FilePath.ordinal()) {
+				column.setText(AutomataFields.FilePath.name());
+
+			}
 		}
 
-		Point sizeBasicEventToStatechart = tableBasicEventToStatechart.computeSize(800, 400);
-		tableBasicEventToStatechart.setSize(sizeBasicEventToStatechart);
+		for (int i = 0; i < columnsBasicEventToAutomata; i++) {
+			tableBasicEventToAutomata.getColumn(i).pack();
+		}
+
+		Point sizeBasicEventToStatechart = tableBasicEventToAutomata.computeSize(800, 400);
+		tableBasicEventToAutomata.setSize(sizeBasicEventToStatechart);
 
 		// Print the selected row in the table
-		tableBasicEventToStatechart.addListener(SWT.MouseDown, event -> {
+		tableBasicEventToAutomata.addListener(SWT.MouseDown, event -> {
 			Point pt = new Point(event.x, event.y);
-			TableItem item = tableBasicEventToStatechart.getItem(pt);
+			TableItem item = tableBasicEventToAutomata.getItem(pt);
 			if (item == null) {
 				return;
 			}
 
 			System.out.println("[Index]" + item.getText(0));
-			this.selectedAutomataArtifact = (this.automataArtifactList.get(Integer.valueOf(item.getText(0)) - 1))
-					.getValue();
-
-			this.selectedAutomataNameText.setText(item.getText(1));
-			this.selectedAutomataIdentifierText.setText(item.getText(2));
+//			this.selectedAutomataArtifact = (this.automataArtifactList.get(Integer.valueOf(item.getText(0)) - 1))
+//					.getValue();
+//
+//			this.selectedAutomataNameText.setText(item.getText(1));
+//			this.selectedAutomataIdentifierText.setText(item.getText(2));
 
 			System.out.println("[Index]" + item.getText(0));
 			System.out.println("[Name]" + item.getText(1));
@@ -371,61 +460,8 @@ public class BrowseTraceabilityPageOne extends WizardPage {
 				GridData.VERTICAL_ALIGN_CENTER, false, false);
 		gridDataRemoveButtonBasicEventToStatechart.horizontalSpan = 1;
 		removeButtonBasicEventToStatechart.setLayoutData(gridDataRemoveButtonBasicEventToStatechart);
-
-//		// Display result
-//		Label selectedBasicEventLabel = new Label(composite, SWT.LEFT);
-//		selectedBasicEventLabel.setText("Basic event name: ");
-//		selectedBasicEventText = new Text(composite, SWT.BORDER | SWT.SINGLE  | SWT.READ_ONLY);
-//		selectedBasicEventText.setText(selectedBasicEvent.getName());
-//		GridData gridDataSelectedBasicEvent = new GridData(GridData.FILL, GridData.CENTER, true, false);
-//		gridDataSelectedBasicEvent.horizontalSpan = 2;
-//		selectedBasicEventText.setLayoutData(gridDataSelectedBasicEvent);
-//
-//		Label selectedBasicEventSafeGuardLabel = new Label(composite, SWT.LEFT);
-//		selectedBasicEventSafeGuardLabel.setText("Is the selected basic event a safe guard? ");
-//		selectedBasicEventSafeGuardText = new Text(composite, SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY);
-//		selectedBasicEventSafeGuardText.setText(this.selectedBasicEvent.isSafeGuard() ? "true" : "false");
-//		GridData gridDataSelectedBasicEventSafeGuard = new GridData(GridData.FILL, GridData.CENTER, true, false);
-//		gridDataSelectedBasicEventSafeGuard.horizontalSpan = 2;
-//		selectedBasicEventSafeGuardText.setLayoutData(gridDataSelectedBasicEventSafeGuard);
-//
-//		Label seselectedFilePathLabel = new Label(composite, SWT.LEFT);
-//		seselectedFilePathLabel.setText("Statechart file path: ");
-//		selectedFilePathText = new Text(composite, SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY);
-//		GridData gridDataSelectedFilePath = new GridData(GridData.FILL, GridData.CENTER, true, false);
-//		gridDataSelectedFilePath.horizontalSpan = 2;
-//		selectedFilePathText.setLayoutData(gridDataSelectedFilePath);
-//
-////		private Text selectedAutomataIdentifierText;
-////		private Text selectedAutomataLastChangeText;
-//
-//		Label selectedAutomataName = new Label(composite, SWT.LEFT);
-//		selectedAutomataName.setText("Automata Name: ");
-//		selectedAutomataNameText = new Text(composite, SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY);
-//		GridData gridDataSelectedAutomataName = new GridData(GridData.FILL, GridData.CENTER, true, false);
-//		gridDataSelectedAutomataName.horizontalSpan = 2;
-//		selectedAutomataNameText.setLayoutData(gridDataSelectedAutomataName);
-//
-//		Label selectedAutomataIdentifierLabel = new Label(composite, SWT.LEFT);
-//		selectedAutomataIdentifierLabel.setText("Automata Identifier: ");
-//		selectedAutomataIdentifierText = new Text(composite, SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY);
-//		GridData gridDataAutomataIdentifier = new GridData(GridData.FILL, GridData.CENTER, true, false);
-//		gridDataAutomataIdentifier.horizontalSpan = 2;
-//		selectedAutomataIdentifierText.setLayoutData(gridDataAutomataIdentifier);
-//
-//		Label selectedAutomataLastChangeLabel = new Label(composite, SWT.LEFT);
-//		selectedAutomataLastChangeLabel.setText("Automata Last Change: ");
-//		selectedAutomataLastChangeText = new Text(composite, SWT.BORDER | SWT.SINGLE | SWT.READ_ONLY);
-//		GridData gridDataSelectedAutomataLastChange = new GridData(GridData.FILL, GridData.CENTER, true, false);
-//		gridDataSelectedAutomataLastChange.horizontalSpan = 2;
-//		selectedAutomataLastChangeText.setLayoutData(gridDataSelectedAutomataLastChange);
-
-		parent.pack();
-
-		// required to avoid an error in the system
-		setControl(composite);
-//		setPageComplete(true);
 	}
+
 
 	public String getText1() {
 		return text1.getText();
@@ -501,6 +537,135 @@ public class BrowseTraceabilityPageOne extends WizardPage {
 
 		Point size = tableRootEventToRequirement.computeSize(SWT.DEFAULT, 400);
 		tableRootEventToRequirement.setSize(size);
+	}
+
+	private void renderTableRootEventToRequirement() {
+
+		System.out.println("[mapRootEventToRequirement]: " + mapRootEventToRequirement.size());
+
+		if (mapRootEventToRequirement.size() == 0 || mapRootEventToRequirement == null) {
+			return;
+		}
+
+		for (Entry<String, RootEventToRequirementTraceLink> entry : mapRootEventToRequirement.entrySet()) {
+
+			TableItem item = new TableItem(tableRootEventToRequirement, SWT.NONE);
+
+			// Print column title
+			for (int i = 0; i < EventFields.values().length; i++) {
+
+				if (i == EventFields.EventId.ordinal()) {
+					item.setText(i, entry.getValue().getSrc().getUuid());
+
+				} else if (i == EventFields.Name.ordinal()) {
+					item.setText(i, entry.getValue().getSrc().getName());
+
+				} else if (i == EventFields.EventType.ordinal()) {
+					item.setText(i, entry.getValue().getSrc().getEventType().toString());
+
+				} else if (i == EventFields.EventUri.ordinal()) {
+					item.setText(i, entry.getValue().getSrc().getEventUri());
+
+				} else if (i == EventFields.FilePath.ordinal()) {
+					item.setText(i, entry.getValue().getSrc().getFilePath());
+
+				} else if (i == EventFields.SafeGuard.ordinal()) {
+					item.setText(i, entry.getValue().getSrc().getSafeGuard().toString());
+				}
+			}
+
+//			Print column title
+			for (int i = 0; i < RequirementFields.values().length; i++) {
+
+				if (i == RequirementFields.OriginDescription.ordinal()) {
+					item.setText(EventFields.values().length + i, entry.getValue().getDst().getOriginDescription());
+
+				} else if (i == RequirementFields.OriginIdentifier.ordinal()) {
+					item.setText(EventFields.values().length + i, entry.getValue().getDst().getOriginIdentifier());
+
+				} else if (i == RequirementFields.ReqType.ordinal()) {
+					item.setText(EventFields.values().length + i, entry.getValue().getDst().getReqType().name());
+
+				} else if (i == RequirementFields.OriginLastChange.ordinal()) {
+					item.setText(EventFields.values().length + i, entry.getValue().getDst().getOriginLastChange());
+
+				} else if (i == RequirementFields.FilePath.ordinal()) {
+					item.setText(EventFields.values().length + i, entry.getValue().getDst().getOriginLastChange());
+
+				}
+			}
+		}
+
+		for (int i = 0; i < columnsRootEventToRequirement; i++) {
+			tableRootEventToRequirement.getColumn(i).pack();
+		}
+
+		Point size = tableRootEventToRequirement.computeSize(SWT.DEFAULT, 400);
+		tableRootEventToRequirement.setSize(size);
+	}
+
+	private void renderTableBasicEventToAutomata() {
+
+		System.out.println("[mapBasicEventToAutomata size]: " + mapBasicEventToAutomata.size());
+
+		if (mapBasicEventToAutomata.size() == 0 || mapBasicEventToAutomata == null) {
+			return;
+		}
+
+
+		for (Entry<String, BasicEventToAutomataTraceLink> entry : mapBasicEventToAutomata.entrySet()) {
+
+			TableItem item = new TableItem(tableBasicEventToAutomata, SWT.NONE);
+//			item.setText(0, String.valueOf(i + 1));
+
+			// Print column title
+			for (int i = 0; i < EventFields.values().length; i++) {
+
+				if (i == EventFields.EventId.ordinal()) {
+					item.setText(i, entry.getValue().getSrc().getUuid());
+
+				} else if (i == EventFields.Name.ordinal()) {
+					item.setText(i, entry.getValue().getSrc().getName());
+
+				} else if (i == EventFields.EventType.ordinal()) {
+					item.setText(i, entry.getValue().getSrc().getEventType().toString());
+
+				} else if (i == EventFields.EventUri.ordinal()) {
+					item.setText(i, entry.getValue().getSrc().getEventUri());
+
+				} else if (i == EventFields.FilePath.ordinal()) {
+					item.setText(i, entry.getValue().getSrc().getFilePath());
+
+				} else if (i == EventFields.SafeGuard.ordinal()) {
+					item.setText(i, entry.getValue().getSrc().getSafeGuard().toString());
+				}
+			}
+
+//			Print column title
+			for (int i = 0; i < AutomataFields.values().length; i++) {
+
+				if (i == AutomataFields.OriginName.ordinal()) {
+					item.setText(EventFields.values().length + i, entry.getValue().getDst().getOriginName());
+
+				} else if (i == AutomataFields.OriginIdentifier.ordinal()) {
+					item.setText(EventFields.values().length + i, entry.getValue().getDst().getOriginIdentifier());
+
+				} else if (i == AutomataFields.OriginLastChange.ordinal()) {
+					item.setText(EventFields.values().length + i, entry.getValue().getDst().getOriginLastChange());
+
+				} else if (i == AutomataFields.FilePath.ordinal()) {
+					item.setText(EventFields.values().length + i, entry.getValue().getDst().getFilePath());
+
+				}
+			}
+		}
+
+		for (int i = 0; i < columnsBasicEventToAutomata; i++) {
+			tableBasicEventToAutomata.getColumn(i).pack();
+		}
+
+		Point size = tableRootEventToRequirement.computeSize(SWT.DEFAULT, 400);
+		tableBasicEventToAutomata.setSize(size);
 	}
 
 	/**

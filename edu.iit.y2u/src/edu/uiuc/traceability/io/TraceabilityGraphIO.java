@@ -19,7 +19,12 @@ import edu.uiuc.traceability.artifacts.EventArtifact;
 import edu.uiuc.traceability.artifacts.EventType;
 import edu.uiuc.traceability.artifacts.RequirementArtifact;
 import edu.uiuc.traceability.artifacts.RequirementType;
+import edu.uiuc.traceability.defaults.AutomataFields;
+import edu.uiuc.traceability.defaults.EventFields;
+import edu.uiuc.traceability.defaults.RequirementFields;
 import edu.uiuc.traceability.defaults.TraceabilityConfigs;
+import edu.uiuc.traceability.defaults.TraceabilityConst;
+import edu.uiuc.traceability.defaults.TraceabilityGraphFields;
 import edu.uiuc.traceability.models.BasicEventToAutomataTraceLink;
 import edu.uiuc.traceability.models.RootEventToRequirementTraceLink;
 import edu.uiuc.traceability.models.TraceabilityGraph;
@@ -67,105 +72,127 @@ public class TraceabilityGraphIO {
 
 			Element rootEle = doc.getDocumentElement();
 
+			// --- rootEventToRequiremenTraceLinks----
 			NodeList rootEventToRequiremenTraceLinksList = rootEle
-					.getElementsByTagName("RootEventToRequiremenTraceLinks");
+					.getElementsByTagName(TraceabilityGraphFields.RootEventToRequirementTraceLinks.name());
 
-			if (rootEventToRequiremenTraceLinksList != null) {
+			System.out.println(
+					"[rootEventToRequiremenTraceLinksList]: " + rootEventToRequiremenTraceLinksList.getLength());
+
+			if (rootEventToRequiremenTraceLinksList != null && rootEventToRequiremenTraceLinksList.getLength() > 0) {
 
 				Map<String, RootEventToRequirementTraceLink> mapRootEventToRequirement = new HashMap<>();
 
 				TraceabilityGraph.setMapRootEventToRequirement(mapRootEventToRequirement);
 
-				for(int i = 0; i < rootEventToRequiremenTraceLinksList.getLength(); i++) {
+				Element elementRootEventToRequiremenTraceLinks = (Element) rootEventToRequiremenTraceLinksList.item(0);
+				NodeList traceList = elementRootEventToRequiremenTraceLinks
+						.getElementsByTagName(TraceabilityConst.Trace);
+
+				System.out.println("[traceList]: " + traceList.getLength());
+
+				for (int i = 0; i < traceList.getLength(); i++) {
 
 					RootEventToRequirementTraceLink traceToBeInserted = new RootEventToRequirementTraceLink();
 					EventArtifact src = new EventArtifact();
 					RequirementArtifact dst = new RequirementArtifact();
 
-					Element traceElement = (Element) rootEventToRequiremenTraceLinksList.item(i);
+					Element traceElement = (Element) traceList.item(i);
 
-					traceToBeInserted.setId(traceElement.getAttribute("TraceId"));
+					traceToBeInserted.setId(traceElement.getAttribute(TraceabilityConst.TraceId));
 
 					mapRootEventToRequirement.put(traceToBeInserted.getId(), traceToBeInserted);
 
-					NodeList eventElements = traceElement.getElementsByTagName("RootEvent");
+					NodeList eventElements = traceElement.getElementsByTagName(TraceabilityConst.RootEvent);
+					NodeList reqElements = traceElement.getElementsByTagName(TraceabilityConst.Requirement);
 
-					if (eventElements != null) {
+					if (eventElements != null && reqElements != null) {
+
+						// assume there is only one RootEvent and one Requirement
 						Element eventElement = (Element) eventElements.item(0);
 
-						src.setUuid(eventElement.getAttribute("EventId"));
-						src.setEventType(EventType.valueOf(eventElement.getAttribute("EventType")));
-						src.setEventUri(eventElement.getAttribute("EventUri"));
-						src.setFilePath(eventElement.getAttribute("FilePath"));
-						src.setName(eventElement.getAttribute("Name"));
-						src.setSafeGuard(Boolean.valueOf(eventElement.getAttribute("SafeGuard")));
+						src.setUuid(eventElement.getAttribute(EventFields.EventId.name()));
+						src.setEventType(EventType.valueOf(eventElement.getAttribute(EventFields.EventType.name())));
+						src.setEventUri(eventElement.getAttribute(EventFields.EventUri.name()));
+						src.setFilePath(eventElement.getAttribute(EventFields.FilePath.name()));
+						src.setName(eventElement.getAttribute(EventFields.Name.name()));
+						src.setSafeGuard(Boolean.valueOf(eventElement.getAttribute(EventFields.SafeGuard.name())));
 						traceToBeInserted.setSrc(src);
-					}
 
-					NodeList reqElements = traceElement.getElementsByTagName("Requirement");
-
-					if (reqElements != null) {
 						Element reqElement = (Element) reqElements.item(0);
 
-						dst.setFilePath(reqElement.getAttribute("FilePath"));
-						dst.setOriginDescription(reqElement.getAttribute("OriginDescription"));
-						dst.setOriginIdentifier(reqElement.getAttribute("OriginIdentifier"));
-						dst.setOriginLastChange(reqElement.getAttribute("OriginLastChange"));
-						dst.setReqType(RequirementType.valueOf(reqElement.getAttribute("ReqType")));
+						dst.setFilePath(reqElement.getAttribute(RequirementFields.FilePath.name()));
+						dst.setOriginDescription(reqElement.getAttribute(RequirementFields.OriginDescription.name()));
+						dst.setOriginIdentifier(reqElement.getAttribute(RequirementFields.OriginIdentifier.name()));
+						dst.setOriginLastChange(reqElement.getAttribute(RequirementFields.OriginLastChange.name()));
+						dst.setReqType(
+								RequirementType.valueOf(reqElement.getAttribute(RequirementFields.ReqType.name())));
 						traceToBeInserted.setDst(dst);
 					}
 				}
 			}
 
-			NodeList basicEventToAutomataTraceLinksList = rootEle
-					.getElementsByTagName("BasicEventToAutomataTraceLinks");
+			// --- End rootEventToRequiremenTraceLinks----
 
-			if (basicEventToAutomataTraceLinksList != null) {
+			// basicEventToAutomataTraceLinks
+
+			NodeList basicEventToAutomataTraceLinksList = rootEle
+					.getElementsByTagName(TraceabilityGraphFields.BasicEventToAutomataTraceLinks.name());
+
+			System.out
+			.println("[basicEventToAutomataTraceLinksList]: " + basicEventToAutomataTraceLinksList.getLength());
+
+			if (basicEventToAutomataTraceLinksList != null && basicEventToAutomataTraceLinksList.getLength() > 0) {
 
 				Map<String, BasicEventToAutomataTraceLink> mapBasicEventToAutomata = new HashMap<>();
 
 				TraceabilityGraph.setMapBasicEventToAutomata(mapBasicEventToAutomata);
 
-				for (int i = 0; i < basicEventToAutomataTraceLinksList.getLength(); i++) {
+				Element elementBasicEventToAutomataTraceLinks = (Element) basicEventToAutomataTraceLinksList.item(0);
+				NodeList traceList = elementBasicEventToAutomataTraceLinks
+						.getElementsByTagName(TraceabilityConst.Trace);
+
+				System.out.println("[traceList]: " + traceList.getLength());
+
+				for (int i = 0; i < traceList.getLength(); i++) {
 
 					BasicEventToAutomataTraceLink traceToBeInserted = new BasicEventToAutomataTraceLink();
 					EventArtifact src = new EventArtifact();
 					AutomataArtifact dst = new AutomataArtifact();
 
-					Element traceElement = (Element) basicEventToAutomataTraceLinksList.item(i);
+					Element traceElement = (Element) traceList.item(i);
 
-					traceToBeInserted.setId(traceElement.getAttribute("TraceId"));
+					traceToBeInserted.setId(traceElement.getAttribute(TraceabilityConst.TraceId));
 
 					mapBasicEventToAutomata.put(traceToBeInserted.getId(), traceToBeInserted);
 
-					NodeList eventElements = traceElement.getElementsByTagName("BasicEvent");
+					NodeList eventElements = traceElement.getElementsByTagName(TraceabilityConst.BasicEvent);
+					NodeList reqElements = traceElement.getElementsByTagName(TraceabilityConst.Automata);
 
-					if (eventElements != null) {
+					if (eventElements != null && reqElements != null) {
+
 						Element eventElement = (Element) eventElements.item(0);
 
-						src.setUuid(eventElement.getAttribute("EventId"));
-						src.setEventType(EventType.valueOf(eventElement.getAttribute("EventType")));
-						src.setEventUri(eventElement.getAttribute("EventUri"));
-						src.setFilePath(eventElement.getAttribute("FilePath"));
-						src.setName(eventElement.getAttribute("Name"));
-						src.setSafeGuard(Boolean.valueOf(eventElement.getAttribute("SafeGuard")));
+						src.setUuid(eventElement.getAttribute(EventFields.EventId.name()));
+						src.setEventType(EventType.valueOf(eventElement.getAttribute(EventFields.EventType.name())));
+						src.setEventUri(eventElement.getAttribute(EventFields.EventUri.name()));
+						src.setFilePath(eventElement.getAttribute(EventFields.FilePath.name()));
+						src.setName(eventElement.getAttribute(EventFields.Name.name()));
+						src.setSafeGuard(Boolean.valueOf(eventElement.getAttribute(EventFields.SafeGuard.name())));
 						traceToBeInserted.setSrc(src);
-					}
 
-					NodeList reqElements = traceElement.getElementsByTagName("Automata");
-
-					if (reqElements != null) {
 						Element reqElement = (Element) reqElements.item(0);
 
-						dst.setFilePath(reqElement.getAttribute("FilePath"));
-						dst.setOriginIdentifier(reqElement.getAttribute("OriginIdentifier"));
-						dst.setOriginLastChange(reqElement.getAttribute("OriginLastChange"));
-						dst.setOriginName(reqElement.getAttribute("OriginName"));
+						dst.setFilePath(reqElement.getAttribute(AutomataFields.FilePath.name()));
+						dst.setOriginIdentifier(reqElement.getAttribute(AutomataFields.OriginIdentifier.name()));
+						dst.setOriginLastChange(reqElement.getAttribute(AutomataFields.OriginLastChange.name()));
+						dst.setOriginName(reqElement.getAttribute(AutomataFields.OriginName.name()));
 						traceToBeInserted.setDst(dst);
 					}
 				}
 			}
 
+			isRead = true;
 
 			// --- read the traceability graph file (*.xml) ---
 //			File xmlFile = new File(traceFilePath);
