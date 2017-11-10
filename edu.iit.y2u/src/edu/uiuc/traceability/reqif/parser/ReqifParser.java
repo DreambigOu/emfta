@@ -193,4 +193,77 @@ public class ReqifParser {
 
 		return result;
 	}
+
+	/*
+	 * @author: Sasan, Andrew
+	 *
+	 * @return String - the requirement description
+	 */
+	public String getRequirmentDescriptionByID(String id) {
+		String result = "";
+
+		String input = "<SPEC-OBJECT IDENTIFIER=" + id + "\"";
+
+		NodeList specObjectsElementList = rootEle.getElementsByTagName(input);
+
+		// in this case, if nonempty you will have one string, that is the line with your desired spec Object
+
+		// note i am assuming only ONE object exists for that specific ID
+
+		if (specObjectsElementList != null) {
+
+			Element specObjectsElement = (Element) specObjectsElementList.item(0);
+
+			String n = specObjectsElement.getAttribute(input);
+
+			String arr[] = n.split("LAST CHANGE =");
+
+			String ans = arr[1];
+
+			// now ans will have something of the form " "date"> "
+
+			result = n;
+
+		}
+
+		return result;
+	}
+
+	public String getLastChangeByID(String id) {
+
+		// transform automata
+		NodeList specObjectsElementList = rootEle.getElementsByTagName("SPEC-OBJECTS");
+
+		System.out.println(
+				"[getIdentifierAndRequirementList().specObjectsElementList]" + specObjectsElementList.getLength());
+		System.out.println(
+				"[getIdentifierAndRequirementList().specObjectsElementList]" + specObjectsElementList.toString());
+
+		if (specObjectsElementList != null && specObjectsElementList.getLength() > 0) {
+
+			Element specObjectsElement = (Element) specObjectsElementList.item(0);
+
+			NodeList specObjectElementList = specObjectsElement.getElementsByTagName("SPEC-OBJECT");
+
+			System.out.println("[getIdentifierAndRequirementList().specObjectElementList.getLength()]"
+					+ specObjectElementList.getLength());
+			System.out.println(
+					"[getIdentifierAndRequirementList().specObjectElementList]" + specObjectElementList.toString());
+
+			if (specObjectElementList != null && specObjectElementList.getLength() > 0) {
+
+				for (int i = 0; i < specObjectElementList.getLength(); i++) {
+					Element specObjectElement = null;
+					specObjectElement = (Element) specObjectElementList.item(i);
+
+					if (id.equals(specObjectElement.getAttribute("IDENTIFIER").trim())) {
+						return specObjectElement.getAttribute("LAST-CHANGE").trim();
+					}
+				}
+			}
+		}
+
+		return null;
+	}
+
 }

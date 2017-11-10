@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
+import analysis.RequirementChangeAnalysis;
 import edu.cmu.emfta.Event;
 import edu.uiuc.traceability.artifacts.AutomataArtifact;
 import edu.uiuc.traceability.defaults.AutomataFields;
@@ -69,6 +70,8 @@ public class BrowseTraceabilityPageOne extends WizardPage {
 	private int LAYOUT_NUM_COLUMNS = 5;
 
 	private TraceabilityGraph tg;
+	private String selectedRequirementId;
+	protected String selectedRequirementFilePath;
 
 	protected BrowseTraceabilityPageOne() {
 		super("Page One");
@@ -247,17 +250,21 @@ public class BrowseTraceabilityPageOne extends WizardPage {
 				return;
 			}
 
-			System.out.println("[Index]" + item.getText(0));
-			this.selectedAutomataArtifact = (this.automataArtifactList.get(Integer.valueOf(item.getText(0)) - 1))
-					.getValue();
+			this.selectedRequirementId = item
+					.getText(EventFields.values().length + RequirementFields.OriginIdentifier.ordinal());
+			this.selectedRequirementFilePath = item
+					.getText(EventFields.values().length + RequirementFields.FilePath.ordinal());
 
-			this.selectedAutomataNameText.setText(item.getText(1));
-			this.selectedAutomataIdentifierText.setText(item.getText(2));
+			System.out.println(
+					"[EventFields.values().length]" + EventFields.values().length);
 
-			System.out.println("[Index]" + item.getText(0));
-			System.out.println("[Name]" + item.getText(1));
-			System.out.println("[Identifier]" + item.getText(2));
-			System.out.println("[Others]" + item.getText(3));
+			System.out.println(
+					"[RequirementFields.OriginIdentifier.ordinal()]" + RequirementFields.OriginIdentifier.ordinal());
+			System.out.println("[RequirementFields.FilePath.ordinal()]" + RequirementFields.FilePath.ordinal());
+
+			System.out.println("[selectedRequirementId]" + this.selectedRequirementId);
+			System.out.println("[selectedRequirementFilePath]" + this.selectedRequirementFilePath);
+
 
 			if (this.selectedAutomataArtifact != null) {
 				setPageComplete(true);
@@ -266,13 +273,29 @@ public class BrowseTraceabilityPageOne extends WizardPage {
 		});
 
 		Button viewButton = new Button(composite, SWT.PUSH);
-		viewButton.setText("View");
+		viewButton.setText("Check Requirement");
 		viewButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-////				Shell shell = parent.getShell();
-////				openDialogs(shell);
-////				readAllAadlFiles();
+
+				if (selectedRequirementFilePath != "" && selectedRequirementId != "") {
+					List<String> result = null;
+
+					RequirementChangeAnalysis analysis = new RequirementChangeAnalysis(selectedRequirementFilePath);
+					if (analysis.isRequirementUpdated(selectedRequirementId)) {
+
+						result = analysis.getImpactedFaultTreeFilePaths(selectedRequirementId);
+					}
+
+					if (result != null) {
+						for (String entry : result) {
+
+							System.out.println("[Impacted fault tree path: ]" + entry);
+						}
+					} else {
+						System.out.println("No impacted fault tree is found");
+					}
+				}
 			}
 		});
 
@@ -590,7 +613,7 @@ public class BrowseTraceabilityPageOne extends WizardPage {
 					item.setText(EventFields.values().length + i, entry.getValue().getDst().getOriginLastChange());
 
 				} else if (i == RequirementFields.FilePath.ordinal()) {
-					item.setText(EventFields.values().length + i, entry.getValue().getDst().getOriginLastChange());
+					item.setText(EventFields.values().length + i, entry.getValue().getDst().getFilePath());
 
 				}
 			}

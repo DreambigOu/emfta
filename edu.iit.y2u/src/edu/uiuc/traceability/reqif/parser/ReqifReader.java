@@ -92,10 +92,4 @@ public class ReqifReader {
 		return specObjects;
 	}
 
-	// @return String : the requirement description
-	public String getRequirmentDescriptionByID(String id) {
-
-		return null;
-	}
-
 }
